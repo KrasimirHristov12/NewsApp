@@ -4,8 +4,8 @@
     {
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
-        Task DeleteAsync(T entity);
+        Task DeleteAsync(Guid id);
 
-        Task<IQueryable<T>> GetAllAsync();
+        IQueryable<T> GetAll();
     }
 }

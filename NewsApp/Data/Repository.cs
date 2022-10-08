@@ -1,8 +1,11 @@
-﻿namespace NewsApp.Data
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace NewsApp.Data
 {
     public class Repository<T> : IRepository<T> where T : class
     {
         private readonly ApplicationDbContext dbContext;
+        private readonly DbSet<T> dbSet;
         public Repository(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
@@ -10,22 +13,30 @@
 
         public async Task AddAsync(T entity)
         {
-            throw new NotImplementedException();
+            await dbSet.AddAsync(entity);
+            await dbContext.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(T entity)
+        public async Task DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            T entity = dbSet.Find(id);
+
+            if (entity != null)
+            {
+                dbSet.Remove(entity);
+                await dbContext.SaveChangesAsync();
+            }
         }
 
-        public async Task<IQueryable<T>> GetAllAsync()
+        public IQueryable<T> GetAll()
         {
-            throw new NotImplementedException();
+            return dbSet.AsQueryable();
         }
 
         public async Task UpdateAsync(T entity)
         {
-            throw new NotImplementedException();
+            dbSet.Update(entity);
+            await dbContext.SaveChangesAsync();
         }
     }
 }
