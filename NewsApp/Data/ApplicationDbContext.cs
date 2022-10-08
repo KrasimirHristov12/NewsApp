@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using NewsApp.Data.Models;
 
 namespace NewsApp.Data
 {
@@ -9,5 +10,8 @@ namespace NewsApp.Data
             : base(options)
         {
         }
+        public DbSet<Article> Articles { get; set; }
+        public DbSet<Category> Categories { get; set; }
+
     }
 }
