@@ -1,9 +1,10 @@
-﻿@model ArticlesInputModel
+﻿@model ArticlesViewModel
+
 
 <div asp-validation-summary="All" class="text-danger"></div>
 
 
-<form asp-action="Add" method="post">
+<form asp-action="Update" method="post">
     <div class="row">
         <div class="col-md-6">
             <label asp-for="Title"></label>
@@ -25,22 +26,19 @@
             <select asp-for="Category" class="form-select">
                 @foreach (var cat in Model.Categories)
                 {
-                    <option value="@cat.Id">@cat.Name</option>
+                    <option selected="@(cat.Id.ToString() == Model.Category ? "selected" : null)" value="@cat.Id">@cat.Name</option>
                 }
             </select>
             <span asp-validation-for="Category" class="text-danger"></span>
         </div>
     </div>
 
+    <input type="hidden" name="Id" id="Id" value="@Model.Id"/>
+
     <div class="row mt-2">
         <div class="col-md-6">
-            <button type="submit" class="btn btn-primary">Add</button>
+            <button type="submit" class="btn btn-primary">Update</button>
         </div>
     </div>
 
 </form>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
-

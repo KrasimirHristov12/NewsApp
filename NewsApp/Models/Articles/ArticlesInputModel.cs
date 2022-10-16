@@ -1,16 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using NewsApp.Models.Categories;
+﻿using NewsApp.Models.Categories;
 using System.ComponentModel.DataAnnotations;
+using System.Xml.Linq;
 
 namespace NewsApp.Models.Articles
 {
-    
-    public class ArticlesViewModel
+    public class ArticlesInputModel
     {
-        [Required]
-        public string Id { get; set; }
-
         [Display(Name = "Article Title:")]
         [Required]
         [StringLength(300, MinimumLength = 10)]
@@ -24,7 +19,8 @@ namespace NewsApp.Models.Articles
         [Required]
         public string Category { get; set; }
 
-        public IEnumerable<CategoriesViewModel>? Categories { get; set; }
 
+
+        public IEnumerable<CategoriesViewModel>? Categories { get; set; }
     }
 }

@@ -16,7 +16,20 @@ namespace NewsApp.Services.Articles
             this.repo = articlesRepo;
         }
 
-        public async Task<bool> AddAsync(ArticlesViewModel articleData, ModelStateDictionary modelState)
+        public IEnumerable<ArticlesViewModel> GetAll()
+        {
+            return repo.GetAll<Article>()
+                .Select(a => new ArticlesViewModel
+                {
+                    Title = a.Title,
+                    Category = a.CategoryId.ToString(),
+                    Content = a.Content,
+                    Id = a.Id.ToString(),
+                })
+                .ToList();
+        }
+
+        public async Task<bool> AddAsync(ArticlesInputModel articleData, ModelStateDictionary modelState)
         {
 
             if (await repo.GetByIdAsync<Category>(articleData.Category) == null)
@@ -38,18 +51,53 @@ namespace NewsApp.Services.Articles
             return true;
         }
 
+        public async Task<bool> DeleteArticleByIdAsync(string id)
+        {
+            var article = await repo.GetByIdAsync<Article>(id);
+            if (article == null)
+            {
+                return false;
+            }
+            await repo.DeleteAsync<Article>(Guid.Parse(id));
+            return true;
+        }
+
+        public async Task<ArticlesViewModel> GetByIdAsync(string id)
+        {
+            var article = await repo.GetByIdAsync<Article>(id);
+            if (article == null)
+            {
+                return null;
+            }
+            return new ArticlesViewModel()
+            {
+                Id = article.Id.ToString(),
+                Title = article.Title,
+                Content = article.Content,
+                Category = article.CategoryId.ToString()
+            };
+        }
+
         public IEnumerable<ArticlesViewModel> GetArticlesByCategory(string categoryName)
         {
             return repo.GetAll<Article>()
                 .Where(a => a.Category.Name == categoryName)
                 .Select(a => new ArticlesViewModel
                 {
+                    Id = a.Id.ToString(),
                     Title = a.Title,
                     Content = a.Content,
-                    Category = a.CategoryId.ToString(),
                 })
                 .ToList();
 
+        }
+        public async Task UpdateAsync(ArticlesViewModel articles)
+        {
+            var article = await repo.GetByIdAsync<Article>(articles.Id);
+            article.Title = articles.Title;
+            article.CategoryId = Guid.Parse(articles.Category);
+            article.Content = articles.Content;
+            await repo.UpdateAsync(article);
         }
     }
 }
