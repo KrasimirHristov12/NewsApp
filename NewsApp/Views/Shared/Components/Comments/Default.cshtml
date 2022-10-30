@@ -1,0 +1,72 @@
+﻿@using System.Security.Claims
+@model ICollection<CommentsViewModel>
+
+
+<div class="comment-section">
+    <h3>Comments (<span class="comments-count">@Model.Count</span>)</h3>
+    @foreach (var comment in Model)
+    {
+
+        <div class="comment">
+          <div class="comment-info row">
+              <div class="user col-md-7">@comment.UserName</div>
+              <div class="created-on col-md-5">@comment.CreatedOn</div>
+          </div>
+          <p class="comment-content">@comment.Content</p>
+        </div>
+    }
+
+
+
+</div>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="comment-form">
+        <input type="text" class="comment-input" name="Content" />
+        <button class="btn btn-primary comment-btn">Add</button>
+    </div>
+    <div class="errors">
+    </div>
+}
+
+
+    <script type="text/javascript" on-content-loaded="true">
+        const userId = '@User.FindFirst(ClaimTypes.NameIdentifier).Value'
+        const articleId = '@Url.ActionContext.RouteData.Values["id"]';
+        $(".comment-btn").click(function () {
+            let content = $('.comment-input').val();
+
+
+        $.ajax({
+            url: '/comments',
+            type: "POST",
+            data: JSON.stringify({
+                ArticleId: articleId,
+                UserId: userId,
+                Content: content
+            }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                console.log(response);
+                $(".comment-section").append(`<div class="comment">
+              <div class="comment-info row">
+                      <div class="user col-md-7">`+ response.userName + `</div>
+                      <div class="created-on col-md-5">` + response.createdOn + `</div>
+              </div>
+                  <p class="comment-content">` + response.content + `</p>
+            </div>`);
+                $(".comments-count").text(parseInt($(".comments-count").text()) + 1);
+                $('.comment-input').val('')
+            },
+            error: function(fail) {
+                $(".errors").empty();
+                for (const error of fail.responseJSON.errors.Content) {
+                    $(".errors").append('<div class="error"><span class="text-danger">' + error + '</span></div>')
+                }    
+            }
+    })
+
+        });
+    </script>

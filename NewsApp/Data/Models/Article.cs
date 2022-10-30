@@ -3,6 +3,11 @@
     using System.ComponentModel.DataAnnotations;
     public class Article
     {
+        public Article()
+        {
+            Comments = new HashSet<Comment>();
+            CreatedOn = DateTime.UtcNow;
+        }
         public Guid Id { get; set; }
 
         [Required]
@@ -17,10 +22,14 @@
 
         public Guid CategoryId { get; set; }
 
+        public DateTime CreatedOn { get; set; }
+
         [Required]
         public string UserId { get; set; }
 
         [Required]
         public ApplicationUser User { get; set; }
+
+        public ICollection<Comment> Comments { get; set; }
     }
 }

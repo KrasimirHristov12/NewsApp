@@ -6,12 +6,14 @@ namespace NewsApp.Services.Articles
     public interface IArticlesService
     {
         IEnumerable<ArticlesViewModel> GetAll();
-        Task<bool> AddAsync(ArticlesInputModel articleData, ModelStateDictionary modelState);
+        Task<bool> AddAsync(ArticlesInputModel articleData, ModelStateDictionary modelState, string userId);
         IEnumerable<ArticlesViewModel> GetArticlesByCategory(string categoryName);
         Task<ArticlesViewModel> GetByIdAsync(string id);
 
-        Task<bool> DeleteArticleByIdAsync(string id);
+        Task<ArticlesViewModel> GetYoursByIdAsync(string id, string userId);
+        Task<bool> DeleteArticleByIdAsync(string id, string userId);
         Task UpdateAsync(ArticlesViewModel articles);
+
 
 
     }

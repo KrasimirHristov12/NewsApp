@@ -29,7 +29,7 @@ namespace NewsApp.Services.Articles
                 .ToList();
         }
 
-        public async Task<bool> AddAsync(ArticlesInputModel articleData, ModelStateDictionary modelState)
+        public async Task<bool> AddAsync(ArticlesInputModel articleData, ModelStateDictionary modelState, string userId)
         {
 
             if (await repo.GetByIdAsync<Category>(articleData.Category) == null)
@@ -46,15 +46,21 @@ namespace NewsApp.Services.Articles
                 Title = articleData.Title,
                 Content = articleData.Content,
                 CategoryId = Guid.Parse(articleData.Category),
+                UserId = userId
             };
             await repo.AddAsync<Article>(article);
             return true;
         }
 
-        public async Task<bool> DeleteArticleByIdAsync(string id)
+        public async Task<bool> DeleteArticleByIdAsync(string id, string userId)
         {
             var article = await repo.GetByIdAsync<Article>(id);
+            
             if (article == null)
+            {
+                return false;
+            }
+            if (article.UserId != userId)
             {
                 return false;
             }
@@ -74,7 +80,7 @@ namespace NewsApp.Services.Articles
                 Id = article.Id.ToString(),
                 Title = article.Title,
                 Content = article.Content,
-                Category = article.CategoryId.ToString()
+                Category = article.CategoryId.ToString(),
             };
         }
 
@@ -98,6 +104,30 @@ namespace NewsApp.Services.Articles
             article.CategoryId = Guid.Parse(articles.Category);
             article.Content = articles.Content;
             await repo.UpdateAsync(article);
+        }
+
+        public async Task<ArticlesViewModel> GetYoursByIdAsync(string id, string userId)
+        {
+            var article = await repo.GetByIdAsync<Article>(id);
+            if (article == null)
+            {
+                return null;
+            }
+            if (article.UserId != userId)
+            {
+                return null;
+            }
+
+            return new ArticlesViewModel()
+            {
+                Id = article.Id.ToString(),
+                Title = article.Title,
+                Content = article.Content,
+                Category = article.CategoryId.ToString(),
+            };
+
+
+
         }
     }
 }

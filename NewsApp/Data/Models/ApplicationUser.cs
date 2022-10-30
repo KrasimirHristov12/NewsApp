@@ -7,7 +7,9 @@ namespace NewsApp.Data.Models
         public ApplicationUser()
         {
             Articles = new HashSet<Article>();
+            Comments = new HashSet<Comment>();
         }
         public ICollection<Article> Articles { get; set; }
+        public ICollection<Comment> Comments { get; set; }
     }
 }

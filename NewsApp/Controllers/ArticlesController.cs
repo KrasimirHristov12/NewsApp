@@ -4,10 +4,11 @@ using NewsApp.Services.Articles;
 using NewsApp.Services.Categories;
 using NewsApp.Models.Categories;
 using NewsApp.Data.Models;
+using System.Security.Claims;
 
 namespace NewsApp.Controllers
 {
-    public class ArticlesController : Controller
+    public class ArticlesController : BaseController
     {
         private readonly ICategoriesService categoriesService;
         private readonly IArticlesService articlesService;
@@ -43,7 +44,9 @@ namespace NewsApp.Controllers
                 
                 return View(article);
             }
-            bool addResult = await articlesService.AddAsync(article, ModelState);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            bool addResult = await articlesService.AddAsync(article, ModelState, userId);
             if (!addResult)
             {
                 
@@ -55,10 +58,11 @@ namespace NewsApp.Controllers
 
         public async Task<IActionResult> Delete(string id)
         {
-            bool deleteResult = await articlesService.DeleteArticleByIdAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            bool deleteResult = await articlesService.DeleteArticleByIdAsync(id, userId);
             if (!deleteResult)
             {
-                return NotFound();
+                return NotFound(); // Not allowed page if user is different from the article's author, not found if invalid article
             }
             return Ok("This article was successfully deleted");
             
@@ -82,7 +86,8 @@ namespace NewsApp.Controllers
         }
         public async Task<IActionResult> Update(string id)
         {
-            var article =  await articlesService.GetByIdAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var article =  await articlesService.GetYoursByIdAsync(id, userId);  
             if (article == null)
             {
                 return NotFound();

@@ -5,6 +5,7 @@ using NewsApp.Data.Models;
 using NewsApp.Data.Seeders;
 using NewsApp.Services.Articles;
 using NewsApp.Services.Categories;
+using NewsApp.Services.Comments;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddScoped<ICategoriesService, CategoriesService>();
 builder.Services.AddScoped<IArticlesService, ArticlesService>();
+builder.Services.AddScoped<ICommentsService, CommentsService>();
 
 builder.Services.ConfigureApplicationCookie(configure =>
 {
