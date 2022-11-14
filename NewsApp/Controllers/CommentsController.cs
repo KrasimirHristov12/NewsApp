@@ -5,7 +5,7 @@ using NewsApp.Services.Comments;
 namespace NewsApp.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class CommentsController : ControllerBase
     {
         private readonly ICommentsService commentsService;

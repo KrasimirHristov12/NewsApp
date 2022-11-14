@@ -7,6 +7,7 @@ namespace NewsApp.Data.Models
         public Comment()
         {
             CreatedOn = DateTime.UtcNow;
+            InnerComments = new HashSet<Comment>();
         }
         public Guid Id { get; set; }
 
@@ -18,6 +19,12 @@ namespace NewsApp.Data.Models
         public string UserId { get; set; }
         [Required]
         public ApplicationUser User { get; set; }
+
+        public Comment OuterComment { get; set; }
+        public Guid? OuterCommentId { get; set; }
+        public ICollection<Comment> InnerComments { get; set; }
+       
+
         public Guid ArticleId { get; set; }
         [Required]
         public Article Article { get; set; }

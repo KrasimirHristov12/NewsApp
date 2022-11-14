@@ -16,35 +16,49 @@ namespace NewsApp.Services.Comments
             this.userManager = userManager;
         }
 
-        public CommentsViewModel Add(CommentsInputModel commentModel)
+        public ICollection<DisplayCommentsViewModel> Add(CommentsInputModel commentModel)
         {
             var comment = new Comment()
             {
                 ArticleId = Guid.Parse(commentModel.ArticleId),
                 UserId = commentModel.UserId,
                 Content = commentModel.Content,
+                OuterCommentId = commentModel.OuterCommentId != null ? Guid.Parse(commentModel.OuterCommentId): null
+
+
             };
             dbContext.Comments.Add(comment);
             dbContext.SaveChanges();
-            return new CommentsViewModel
-            {
-                Content = comment.Content,
-                CreatedOn = comment.CreatedOn.ToString("G"),
-                UserName = userManager.FindByIdAsync(comment.UserId).GetAwaiter().GetResult().UserName
-            };
+            return GetAllForArticle(Guid.Parse(commentModel.ArticleId));
         }
 
-        public ICollection<CommentsViewModel> GetAllForArticle(Guid articleId)
+        public ICollection<DisplayCommentsViewModel> GetAllForArticle(Guid articleId)
         {
             return dbContext.Comments
                 .Where(c => c.ArticleId == articleId)
-                .Select(c => new CommentsViewModel
+                .Select(c => new DisplayCommentsViewModel
                 {
+                    Id = c.Id.ToString(),
                     Content = c.Content,
                     CreatedOn = c.CreatedOn.ToString("G"),
+                    OuterCommentId = c.OuterCommentId != null ? c.OuterCommentId.ToString() : null,
                     UserName = c.User.UserName
                 }).ToList();
 
+        }
+
+        public ICollection<DisplayCommentsViewModel> GetInnerComments(Guid commentId)
+        {
+            return dbContext.Comments
+                .Where(c => c.OuterCommentId == commentId)
+                .Select(c => new DisplayCommentsViewModel
+                {
+                    Id = c.Id.ToString(),
+                    Content = c.Content,
+                    CreatedOn = c.CreatedOn.ToString("G"),
+                    UserName = c.User.UserName,
+                    OuterCommentId = c.OuterCommentId != null ? c.OuterCommentId.ToString() : null,
+                }).ToList();
         }
     }
 }

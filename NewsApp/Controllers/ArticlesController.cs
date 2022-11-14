@@ -5,6 +5,7 @@ using NewsApp.Services.Categories;
 using NewsApp.Models.Categories;
 using NewsApp.Data.Models;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NewsApp.Controllers
 {
@@ -18,6 +19,7 @@ namespace NewsApp.Controllers
             this.categoriesService = categoriesService;
             this.articlesService = articlesService;
         }
+        [AllowAnonymous]
         public IActionResult All()
         {
             var articles = articlesService.GetAll();
@@ -68,13 +70,13 @@ namespace NewsApp.Controllers
             
         }
 
-
+        [AllowAnonymous]
         public IActionResult ByCategory(string name)
         {
             var articles = articlesService.GetArticlesByCategory(name);
             return View(articles);
         }
-
+        [AllowAnonymous]
         public async Task<IActionResult> Details(string id)
         {
             var article = await articlesService.GetByIdAsync(id);

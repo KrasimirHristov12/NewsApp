@@ -2,8 +2,8 @@
 {
     public class CommentsViewModel
     {
-        public string Content { get; set; }
-        public string UserName { get; set; }
-        public string CreatedOn { get; set; }
+        public string UserId { get; set; }
+        public string ArticleId { get; set; }
+        public ICollection<DisplayCommentsViewModel> Comments { get; set; }
     }
 }

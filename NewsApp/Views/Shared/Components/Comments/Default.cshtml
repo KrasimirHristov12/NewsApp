@@ -1,72 +1,138 @@
 ﻿@using System.Security.Claims
-@model ICollection<CommentsViewModel>
+@using NewsApp.Services.Comments
+@model CommentsViewModel
 
+@{
+    var comments = Model.Comments.ToList();
+}
+<h3>Comments (<span class="comments-count">@Model.Comments.Count</span>):</h3>
 
-<div class="comment-section">
-    <h3>Comments (<span class="comments-count">@Model.Count</span>)</h3>
-    @foreach (var comment in Model)
+<div class="comments">
+    @foreach (var comment in comments.Where(c => c.OuterCommentId == null))
     {
+        <div id="comment-@(comment.Id)" class="comment border border-2 mb-2">
+            <span class="username fw-bold">@comment.UserName</span>
+            <span class="createdOn fw-bold">- @comment.CreatedOn</span>
+            <p class="content">@comment.Content</p>
+            <vc:inner-comments comment-id="@comment.Id" article-id="@Model.ArticleId"></vc:inner-comments>
 
-        <div class="comment">
-          <div class="comment-info row">
-              <div class="user col-md-7">@comment.UserName</div>
-              <div class="created-on col-md-5">@comment.CreatedOn</div>
-          </div>
-          <p class="comment-content">@comment.Content</p>
+            <button id="reply-btn-@(comment.Id)" class="btn btn-primary reply-btn">Reply</button>
+            <div id="comment-@(comment.Id)-reply-form" class="border border-2 p-3 d-none">
+                <h5>Reply to a comment:</h5>
+                <textarea class="comment-content" id="reply-@(comment.Id)-content" placeholder="Please be as detailed as possible" rows="4" cols="50"></textarea>
+                <div class="submit-btn-container">
+                    <button class="reply-submit-btn btn btn-primary">Submit</button>
+                </div>
+
+            </div>
+
         </div>
+    }
+
+</div>
+
+<button class="add-comment btn btn-primary mb-2">Add a new comment</button>
+
+    <div class="comment-submit-form border border-2 p-3 d-none">
+        <h5>Add a comment:</h5>
+        <textarea id="comment-content-id" class="comment-content" placeholder="Please be as detailed as possible" rows="4" cols="50"></textarea>
+        <div class="submit-btn-container">
+            <button class="submit-btn btn btn-primary">Submit</button>
+        </div>
+
+    </div>
+
+
+
+
+
+<script type="text/javascript" on-content-loaded="true">
+    $("button.submit-btn").click(function () {
+        postComment($("textarea#comment-content-id"));
+    });
+
+    $("button.reply-submit-btn").click(function () {
+        $commentId = getCommentId($(this).closest("div.comment"));
+        $commentReplyTextarea = $(`textarea#reply-${$commentId}-content`);
+        postComment($commentReplyTextarea, $commentId);
+    });
+
+
+    $("button.add-comment").click(function () {
+
+        toggleAddCommentBox(".comment-submit-form");
+    });
+
+    $("button.reply-btn").click(function () {
+        $commentId = getCommentId($(this).closest("div.comment"));
+        
+        toggleAddCommentBox(`div#comment-${$commentId}-reply-form`);
+    });
+
+    function getCommentId(htmlElement) {
+        return htmlElement.attr('id').match("\-(.*)$")[1];
+    }
+
+    function toggleAddCommentBox(submitFormSelector) {
+        $addCommentBox = $(submitFormSelector);
+        if ($addCommentBox.hasClass("d-none")) {
+            $addCommentBox.removeClass("d-none");
+        }
+        else {
+            $addCommentBox.addClass("d-none");
+        }
+    }
+
+
+    function postComment(textareaContentSelector, outerCommentId = null) {
+        $articleId = "@Model.ArticleId";
+        $userId = "@Model.UserId";
+
+        $textAreaCommentContent = textareaContentSelector;
+        $commentContent = $textAreaCommentContent.val();
+
+        $.ajax({
+            type: "POST",
+            url: "/api/comments",
+            data: JSON.stringify({ articleId: $articleId, userId: $userId, content: $commentContent, outerCommentId: outerCommentId }),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) 
+            {
+                console.log(data);
+                //loadComments(data);
+                $textAreaCommentContent.val('');
+            },
+            error: function (errMsg) {
+                alert(errMsg);
+            }
+
+
+        });
+
+    }
+
+    function loadComments(comments) {
+        $totalComments = comments.length;
+        $spanCountComments = $("span.comments-count");
+        $displayedComments = parseInt($spanCountComments.text());
+        $commentsContainer = $("div.comments")
+        for (let i = $displayedComments; i < $totalComments; i++) {
+            $currentComment = comments[i];
+            $commentsContainer.append(
+            `
+                <div id="comment-${$currentComment.id}" class="comment border border-2 mb-2">
+                    <span class="username fw-bold">${$currentComment.userName}</span>
+                    <span class="createdOn fw-bold">- ${$currentComment.createdOn}</span>
+                    <p class="content">${$currentComment.content}</p>
+                </div>
+            `);
+
+
+        }
+        $spanCountComments.text($totalComments);
     }
 
 
 
-</div>
-
-@if (User.Identity.IsAuthenticated)
-{
-    <div class="comment-form">
-        <input type="text" class="comment-input" name="Content" />
-        <button class="btn btn-primary comment-btn">Add</button>
-    </div>
-    <div class="errors">
-    </div>
-}
-
-
-    <script type="text/javascript" on-content-loaded="true">
-        const userId = '@User.FindFirst(ClaimTypes.NameIdentifier).Value'
-        const articleId = '@Url.ActionContext.RouteData.Values["id"]';
-        $(".comment-btn").click(function () {
-            let content = $('.comment-input').val();
-
-
-        $.ajax({
-            url: '/comments',
-            type: "POST",
-            data: JSON.stringify({
-                ArticleId: articleId,
-                UserId: userId,
-                Content: content
-            }),
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: function (response) {
-                console.log(response);
-                $(".comment-section").append(`<div class="comment">
-              <div class="comment-info row">
-                      <div class="user col-md-7">`+ response.userName + `</div>
-                      <div class="created-on col-md-5">` + response.createdOn + `</div>
-              </div>
-                  <p class="comment-content">` + response.content + `</p>
-            </div>`);
-                $(".comments-count").text(parseInt($(".comments-count").text()) + 1);
-                $('.comment-input').val('')
-            },
-            error: function(fail) {
-                $(".errors").empty();
-                for (const error of fail.responseJSON.errors.Content) {
-                    $(".errors").append('<div class="error"><span class="text-danger">' + error + '</span></div>')
-                }    
-            }
-    })
-
-        });
-    </script>
+</script>

@@ -4,7 +4,9 @@ namespace NewsApp.Services.Comments
 {
     public interface ICommentsService
     {
-        ICollection<CommentsViewModel> GetAllForArticle(Guid articleId);
-        CommentsViewModel Add(CommentsInputModel commentModel);
+        ICollection<DisplayCommentsViewModel> GetAllForArticle(Guid articleId);
+
+        ICollection<DisplayCommentsViewModel> GetInnerComments(Guid commentId);
+        ICollection<DisplayCommentsViewModel> Add(CommentsInputModel commentModel);
     }
 }
