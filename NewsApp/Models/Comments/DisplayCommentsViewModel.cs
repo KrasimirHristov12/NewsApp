@@ -8,5 +8,7 @@
         public string CreatedOn { get; set; }
         public string OuterCommentId { get; set; }
 
+        public ICollection<DisplayCommentsViewModel> InnerComments { get; set; }
+
     }
 }

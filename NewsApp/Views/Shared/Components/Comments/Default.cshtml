@@ -14,12 +14,22 @@
             <span class="username fw-bold">@comment.UserName</span>
             <span class="createdOn fw-bold">- @comment.CreatedOn</span>
             <p class="content">@comment.Content</p>
-            <vc:inner-comments comment-id="@comment.Id" article-id="@Model.ArticleId"></vc:inner-comments>
+            <div class="inner-comments">
+                @foreach (var innerComment in comment.InnerComments)
+                {
+                    <div id="inner-comment-@(innerComment.Id)" class="inner-comment border border-2 mb-2 ms-2">
+                        <span class="username fw-bold">@innerComment.UserName</span>
+                        <span class="createdOn fw-bold">- @innerComment.CreatedOn</span>
+                        <p class="content">@innerComment.Content</p>
+                    </div>
+                }
+            </div>
 
-            <button id="reply-btn-@(comment.Id)" class="btn btn-primary reply-btn">Reply</button>
-            <div id="comment-@(comment.Id)-reply-form" class="border border-2 p-3 d-none">
+
+            <button class="btn btn-primary reply-btn">Reply</button>
+            <div class="comment-reply-form border border-2 p-3 d-none">
                 <h5>Reply to a comment:</h5>
-                <textarea class="comment-content" id="reply-@(comment.Id)-content" placeholder="Please be as detailed as possible" rows="4" cols="50"></textarea>
+                <textarea class="comment-content" placeholder="Please be as detailed as possible" rows="4" cols="50"></textarea>
                 <div class="submit-btn-container">
                     <button class="reply-submit-btn btn btn-primary">Submit</button>
                 </div>
@@ -33,48 +43,48 @@
 
 <button class="add-comment btn btn-primary mb-2">Add a new comment</button>
 
-    <div class="comment-submit-form border border-2 p-3 d-none">
-        <h5>Add a comment:</h5>
-        <textarea id="comment-content-id" class="comment-content" placeholder="Please be as detailed as possible" rows="4" cols="50"></textarea>
-        <div class="submit-btn-container">
-            <button class="submit-btn btn btn-primary">Submit</button>
-        </div>
-
+<div class="comment-submit-form border border-2 p-3 d-none">
+    <h5>Add a comment:</h5>
+    <textarea class="comment-content" placeholder="Please be as detailed as possible" rows="4" cols="50"></textarea>
+    <div class="submit-btn-container">
+        <button class="submit-btn btn btn-primary">Submit</button>
     </div>
+
+</div>
 
 
 
 
 
 <script type="text/javascript" on-content-loaded="true">
+
+    $articleId = "@Model.ArticleId";
+    $userId = "@Model.UserId";
+
     $("button.submit-btn").click(function () {
-        postComment($("textarea#comment-content-id"));
+        postComment($(this).parent().prev(), $articleId, $userId);
     });
 
-    $("button.reply-submit-btn").click(function () {
-        $commentId = getCommentId($(this).closest("div.comment"));
-        $commentReplyTextarea = $(`textarea#reply-${$commentId}-content`);
-        postComment($commentReplyTextarea, $commentId);
+    $(document).on("click", "button.reply-submit-btn", function () {
+        $commentReplyTextarea = $(this).parent().prev();
+        $outerCommentId = $(this).closest(".comment").attr("id").match("\-(.*)$")[1];
+        postComment($commentReplyTextarea, $articleId, $userId, $outerCommentId);
     });
 
 
     $("button.add-comment").click(function () {
 
-        toggleAddCommentBox(".comment-submit-form");
+        toggleCommentBox($(this));
     });
 
-    $("button.reply-btn").click(function () {
-        $commentId = getCommentId($(this).closest("div.comment"));
-        
-        toggleAddCommentBox(`div#comment-${$commentId}-reply-form`);
+    $(document).on("click", "button.reply-btn", function () {
+        // ADDED DUE TO THE NEED TO ATTACH EVENTS TO DYNAMICALLY CREATED BUTTONS.
+        toggleCommentBox($(this));
     });
 
-    function getCommentId(htmlElement) {
-        return htmlElement.attr('id').match("\-(.*)$")[1];
-    }
+    function toggleCommentBox(btnElement) {
+        $addCommentBox = btnElement.next();
 
-    function toggleAddCommentBox(submitFormSelector) {
-        $addCommentBox = $(submitFormSelector);
         if ($addCommentBox.hasClass("d-none")) {
             $addCommentBox.removeClass("d-none");
         }
@@ -84,23 +94,21 @@
     }
 
 
-    function postComment(textareaContentSelector, outerCommentId = null) {
-        $articleId = "@Model.ArticleId";
-        $userId = "@Model.UserId";
+    function postComment(textareaContentElement, articleId, userId, outerCommentId = null) {
 
-        $textAreaCommentContent = textareaContentSelector;
+
+        $textAreaCommentContent = textareaContentElement;
         $commentContent = $textAreaCommentContent.val();
+
 
         $.ajax({
             type: "POST",
             url: "/api/comments",
-            data: JSON.stringify({ articleId: $articleId, userId: $userId, content: $commentContent, outerCommentId: outerCommentId }),
+            data: JSON.stringify({ articleId: articleId, userId: userId, content: $commentContent, outerCommentId: outerCommentId }),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            success: function (data) 
-            {
-                console.log(data);
-                //loadComments(data);
+            success: function (data) {
+                visualizeComments(data, articleId);
                 $textAreaCommentContent.val('');
             },
             error: function (errMsg) {
@@ -112,26 +120,69 @@
 
     }
 
-    function loadComments(comments) {
-        $totalComments = comments.length;
-        $spanCountComments = $("span.comments-count");
-        $displayedComments = parseInt($spanCountComments.text());
-        $commentsContainer = $("div.comments")
-        for (let i = $displayedComments; i < $totalComments; i++) {
-            $currentComment = comments[i];
-            $commentsContainer.append(
-            `
-                <div id="comment-${$currentComment.id}" class="comment border border-2 mb-2">
-                    <span class="username fw-bold">${$currentComment.userName}</span>
-                    <span class="createdOn fw-bold">- ${$currentComment.createdOn}</span>
-                    <p class="content">${$currentComment.content}</p>
-                </div>
-            `);
+    $initialComments = getData($articleId);
 
 
+
+    function visualizeComments(comments, articleId) 
+    {
+        for (let i = $initialComments.length; i < comments.length; i++) {
+            if (comments[i].outerCommentId != null) {
+                $innerCommentHtml =
+                    `<div id="inner-comment-${comments[i].id}" class="inner-comment border border-2 mb-2 ms-2">
+                        <span class="username fw-bold">${comments[i].userName}</span>
+                         <span class="createdOn fw-bold">- ${comments[i].createdOn}</span>
+                          <p class="content">${comments[i].content}</p>
+                    </div>`;
+
+                $(`#comment-${comments[i].outerCommentId}`).find(".inner-comments").append($innerCommentHtml);
+            }
+            else {
+                $outerCommentHtml = 
+                `<div id="comment-${comments[i].id}" class="comment border border-2 mb-2">
+                    <span class="username fw-bold">${comments[i].userName}</span>
+                    <span class="createdOn fw-bold">- ${comments[i].createdOn}</span>
+                    <p class="content">${comments[i].content}</p>
+                    <div class="inner-comments"></div>
+                    <button class="btn btn-primary reply-btn">Reply</button>
+                    <div class="comment-reply-form border border-2 p-3 d-none">
+                    <h5>Reply to a comment:</h5>
+                    <textarea class="comment-content" placeholder="Please be as detailed as possible" rows="4" cols="50"></textarea>
+                    <div class="submit-btn-container">
+                        <button class="reply-submit-btn btn btn-primary">Submit</button>
+                    </div>
+                </div>`;
+
+                $(".comments").append($outerCommentHtml);
+
+            }
+            $(".comments-count").text(comments.length.toString());
         }
-        $spanCountComments.text($totalComments);
+
+        $initialComments = comments;
+
     }
+
+    function getData(articleId) {
+        comments = [];
+
+        $.ajax({
+            type: "GET",
+            url: `/api/comments?articleId=${articleId}`,
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                comments = data;
+            },
+            error: function (errMsg) {
+                alert(errMsg);
+            }
+
+
+        });
+        return comments;
+    }
+        
 
 
 

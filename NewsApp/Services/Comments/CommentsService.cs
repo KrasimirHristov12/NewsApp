@@ -41,7 +41,17 @@ namespace NewsApp.Services.Comments
                     Id = c.Id.ToString(),
                     Content = c.Content,
                     CreatedOn = c.CreatedOn.ToString("G"),
-                    OuterCommentId = c.OuterCommentId != null ? c.OuterCommentId.ToString() : null,
+                    OuterCommentId = c.OuterCommentId.ToString() ?? null,
+                    InnerComments = c.InnerComments.Select(ic => new DisplayCommentsViewModel
+                    {
+                        Id=ic.Id.ToString(),
+                        Content=ic.Content,
+                        UserName = ic.User.UserName,
+                        CreatedOn=ic.CreatedOn.ToString("G"),
+                        OuterCommentId = ic.OuterCommentId.ToString() ?? string.Empty,
+                        InnerComments = new List<DisplayCommentsViewModel>(),
+                        
+                    }).ToList(),
                     UserName = c.User.UserName
                 }).ToList();
 
