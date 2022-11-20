@@ -12,8 +12,8 @@ using NewsApp.Data;
 namespace NewsApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221030185748_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20221120094625_AlteredLikeTable")]
+    partial class AlteredLikeTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -293,6 +293,38 @@ namespace NewsApp.Data.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("OuterCommentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArticleId");
+
+                    b.HasIndex("OuterCommentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("NewsApp.Data.Models.UserArticleLikes", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<Guid>("ArticleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool?>("IsLiked")
+                        .HasColumnType("bit");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -303,7 +335,7 @@ namespace NewsApp.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("UserArticleLikes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -384,8 +416,33 @@ namespace NewsApp.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("NewsApp.Data.Models.Comment", "OuterComment")
+                        .WithMany("InnerComments")
+                        .HasForeignKey("OuterCommentId");
+
                     b.HasOne("NewsApp.Data.Models.ApplicationUser", "User")
                         .WithMany("Comments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Article");
+
+                    b.Navigation("OuterComment");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("NewsApp.Data.Models.UserArticleLikes", b =>
+                {
+                    b.HasOne("NewsApp.Data.Models.Article", "Article")
+                        .WithMany("UserArticleLikes")
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NewsApp.Data.Models.ApplicationUser", "User")
+                        .WithMany("UserArticleLikes")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -400,16 +457,25 @@ namespace NewsApp.Data.Migrations
                     b.Navigation("Articles");
 
                     b.Navigation("Comments");
+
+                    b.Navigation("UserArticleLikes");
                 });
 
             modelBuilder.Entity("NewsApp.Data.Models.Article", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("UserArticleLikes");
                 });
 
             modelBuilder.Entity("NewsApp.Data.Models.Category", b =>
                 {
                     b.Navigation("Articles");
+                });
+
+            modelBuilder.Entity("NewsApp.Data.Models.Comment", b =>
+                {
+                    b.Navigation("InnerComments");
                 });
 #pragma warning restore 612, 618
         }

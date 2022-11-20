@@ -56,19 +56,5 @@ namespace NewsApp.Services.Comments
                 }).ToList();
 
         }
-
-        public ICollection<DisplayCommentsViewModel> GetInnerComments(Guid commentId)
-        {
-            return dbContext.Comments
-                .Where(c => c.OuterCommentId == commentId)
-                .Select(c => new DisplayCommentsViewModel
-                {
-                    Id = c.Id.ToString(),
-                    Content = c.Content,
-                    CreatedOn = c.CreatedOn.ToString("G"),
-                    UserName = c.User.UserName,
-                    OuterCommentId = c.OuterCommentId != null ? c.OuterCommentId.ToString() : null,
-                }).ToList();
-        }
     }
 }

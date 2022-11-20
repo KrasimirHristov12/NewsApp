@@ -13,6 +13,7 @@ namespace NewsApp.Data
         public DbSet<Article> Articles { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<UserArticleLikes> UserArticleLikes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -22,6 +23,14 @@ namespace NewsApp.Data
                 .HasOne(c => c.User)
                 .WithMany(u => u.Comments)
                 .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+           
+
+           builder.Entity<UserArticleLikes>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.UserArticleLikes)
+                .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
 

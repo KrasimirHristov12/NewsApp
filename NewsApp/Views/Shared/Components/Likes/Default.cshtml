@@ -1,0 +1,54 @@
+﻿@model LikesViewModel
+
+<button class="like-btn"><i class="fa-sharp fa-solid fa-thumbs-up">@Model.LikesCount</i></button>
+<button class="dislike-btn"><i class="fa-sharp fa-solid fa-thumbs-down">@Model.DislikeCount</i></button>
+
+
+<script type="text/javascript" on-content-loaded="true">
+    $articleId = "@Model.ArticleId";
+    $userId = "@Model.UserId";
+
+    function vote(isLiked, articleId, userId) {
+        $.ajax({
+            type: "POST",
+            url: "/api/likes",
+            data: JSON.stringify({userId: userId, articleId: articleId, isLiked: isLiked}),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                oldLikeCount = parseInt($(".like-btn").text());
+                oldDislikeCount = parseInt($(".dislike-btn").text());
+
+                newLikeCount = data.likesCount;
+                newDislikeCount = data.dislikeCount;
+                if (newLikeCount > oldLikeCount) {
+                    $(".like-btn i").addClass("text-success");
+                    $(".dislike-btn i").removeClass("text-danger");
+                }
+                if (newDislikeCount > oldDislikeCount) {
+                    $(".dislike-btn i").addClass("text-danger");
+                    $(".like-btn i").removeClass("text-success");
+
+                }
+
+                $(".like-btn i").text(data.likesCount);
+                $(".dislike-btn i").text(data.dislikeCount);
+                console.log(data);
+            },
+            error: function (errMsg) {
+                alert(errMsg);
+            }
+
+
+        });
+    }
+
+
+
+    $(".like-btn").click(function () {
+        vote(true, $articleId, $userId)
+    })
+    $(".dislike-btn").click(function () {
+        vote(false, $articleId, $userId);
+    })
+</script>

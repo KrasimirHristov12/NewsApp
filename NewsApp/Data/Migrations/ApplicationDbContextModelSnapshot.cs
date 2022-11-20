@@ -309,6 +309,33 @@ namespace NewsApp.Data.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("NewsApp.Data.Models.UserArticleLikes", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<Guid>("ArticleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool?>("IsLiked")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArticleId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserArticleLikes");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -404,16 +431,39 @@ namespace NewsApp.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("NewsApp.Data.Models.UserArticleLikes", b =>
+                {
+                    b.HasOne("NewsApp.Data.Models.Article", "Article")
+                        .WithMany("UserArticleLikes")
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NewsApp.Data.Models.ApplicationUser", "User")
+                        .WithMany("UserArticleLikes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Article");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("NewsApp.Data.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Articles");
 
                     b.Navigation("Comments");
+
+                    b.Navigation("UserArticleLikes");
                 });
 
             modelBuilder.Entity("NewsApp.Data.Models.Article", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("UserArticleLikes");
                 });
 
             modelBuilder.Entity("NewsApp.Data.Models.Category", b =>

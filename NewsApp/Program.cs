@@ -6,6 +6,7 @@ using NewsApp.Data.Seeders;
 using NewsApp.Services.Articles;
 using NewsApp.Services.Categories;
 using NewsApp.Services.Comments;
+using NewsApp.Services.Likes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,7 @@ builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddScoped<ICategoriesService, CategoriesService>();
 builder.Services.AddScoped<IArticlesService, ArticlesService>();
 builder.Services.AddScoped<ICommentsService, CommentsService>();
+builder.Services.AddScoped<ILikesService, LikesService>();
 
 builder.Services.ConfigureApplicationCookie(configure =>
 {

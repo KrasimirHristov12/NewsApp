@@ -202,6 +202,7 @@ namespace NewsApp.Data.Migrations
                     Content = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    OuterCommentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ArticleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -215,6 +216,39 @@ namespace NewsApp.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Comments_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Comments_Comments_OuterCommentId",
+                        column: x => x.OuterCommentId,
+                        principalTable: "Comments",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserArticleLikes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IsLiked = table.Column<bool>(type: "bit", nullable: false),
+                    IsDisliked = table.Column<bool>(type: "bit", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ArticleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserArticleLikes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserArticleLikes_Articles_ArticleId",
+                        column: x => x.ArticleId,
+                        principalTable: "Articles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserArticleLikes_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -276,8 +310,23 @@ namespace NewsApp.Data.Migrations
                 column: "ArticleId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Comments_OuterCommentId",
+                table: "Comments",
+                column: "OuterCommentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Comments_UserId",
                 table: "Comments",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserArticleLikes_ArticleId",
+                table: "UserArticleLikes",
+                column: "ArticleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserArticleLikes_UserId",
+                table: "UserArticleLikes",
                 column: "UserId");
         }
 
@@ -300,6 +349,9 @@ namespace NewsApp.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Comments");
+
+            migrationBuilder.DropTable(
+                name: "UserArticleLikes");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
