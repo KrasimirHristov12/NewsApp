@@ -29,6 +29,21 @@ namespace NewsApp.Services.Articles
                 .ToList();
         }
 
+        public IEnumerable<ArticlesViewModel> GetPerPage(int numberPerPage, int currentPage)
+        {
+           return repo.GetAll<Article>()
+                .Select(a => new ArticlesViewModel
+                {
+                    Title = a.Title,
+                    Category = a.CategoryId.ToString(),
+                    Content = a.Content,
+                    Id = a.Id.ToString(),
+                })
+                .Skip((currentPage - 1) * numberPerPage)
+                .Take(numberPerPage)
+                .ToList();
+        }
+
         public async Task<bool> AddAsync(ArticlesInputModel articleData, ModelStateDictionary modelState, string userId)
         {
 

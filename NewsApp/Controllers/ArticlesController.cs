@@ -20,9 +20,11 @@ namespace NewsApp.Controllers
             this.articlesService = articlesService;
         }
         [AllowAnonymous]
-        public IActionResult All()
+        public IActionResult All(int page)
         {
-            var articles = articlesService.GetAll();
+            var totalArticlesCount = articlesService.GetAll().Count();
+            ViewData["ArticlesCount"] = totalArticlesCount;
+            var articles = articlesService.GetPerPage(6, page);
             return View(articles);
         }
         public IActionResult Add()
@@ -54,7 +56,7 @@ namespace NewsApp.Controllers
                 
                 return View(article);
             }
-            return RedirectToAction(nameof(All));
+            return RedirectToAction(nameof(All), new {page = 1});
 
         }
 

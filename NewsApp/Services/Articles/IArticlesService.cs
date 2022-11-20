@@ -14,6 +14,8 @@ namespace NewsApp.Services.Articles
         Task<bool> DeleteArticleByIdAsync(string id, string userId);
         Task UpdateAsync(ArticlesViewModel articles);
 
+        IEnumerable<ArticlesViewModel> GetPerPage(int numberPerPage, int currentPage);
+
 
 
     }

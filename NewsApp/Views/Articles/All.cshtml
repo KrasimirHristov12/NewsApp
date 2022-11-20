@@ -2,3 +2,10 @@
 
 
 <partial name="_PresentArticles" model="@Model" />
+
+<div>
+    @for (int i = 1; i <= Math.Ceiling(int.Parse(ViewData["ArticlesCount"].ToString()) / 6.0); i++)
+    {
+        <a asp-route-page="@i">@i</a>
+    }
+</div>
