@@ -6,7 +6,9 @@ using NewsApp.Data.Seeders;
 using NewsApp.Services.Articles;
 using NewsApp.Services.Categories;
 using NewsApp.Services.Comments;
+using NewsApp.Services.GeoInfoProvider;
 using NewsApp.Services.Likes;
+using NewsApp.Services.Weather;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +35,8 @@ builder.Services.AddScoped<ICategoriesService, CategoriesService>();
 builder.Services.AddScoped<IArticlesService, ArticlesService>();
 builder.Services.AddScoped<ICommentsService, CommentsService>();
 builder.Services.AddScoped<ILikesService, LikesService>();
+builder.Services.AddScoped<IGeoInfoProviderService, GeoInfoProviderService>();
+builder.Services.AddScoped<IWeatherService, WeatherService>();
 
 builder.Services.ConfigureApplicationCookie(configure =>
 {
