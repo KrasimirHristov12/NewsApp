@@ -8,6 +8,7 @@
             Comments = new HashSet<Comment>();
             CreatedOn = DateTime.UtcNow;
             UserArticleLikes = new HashSet<UserArticleLikes>();
+            ArticleViews = new HashSet<ArticleViews>();
         }
         public Guid Id { get; set; }
 
@@ -33,5 +34,6 @@
 
         public ICollection<Comment> Comments { get; set; }
         public ICollection<UserArticleLikes> UserArticleLikes { get; set; }
+        public ICollection<ArticleViews> ArticleViews { get; set; }
     }
 }

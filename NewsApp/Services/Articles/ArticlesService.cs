@@ -177,5 +177,17 @@ namespace NewsApp.Services.Articles
             return views.ViewsCount;
 
         }
+
+        public IEnumerable<HomeArticlesViewModel> GetMostWatched(int n)
+        {
+            return repo.GetAll<Article>().OrderByDescending(a => a.ArticleViews.First().ViewsCount)
+                 .Take(n)
+                 .Select(a => new HomeArticlesViewModel
+                 {
+                     Id = a.Id.ToString(),
+                     Title = a.Title,
+                 })
+                 .ToList();
+        }
     }
 }
