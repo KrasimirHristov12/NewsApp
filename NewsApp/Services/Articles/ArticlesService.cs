@@ -189,5 +189,17 @@ namespace NewsApp.Services.Articles
                  })
                  .ToList();
         }
+
+        public IEnumerable<HomeArticlesViewModel> GetMostLiked(int n)
+        {
+            return repo.GetAll<Article>().OrderByDescending(a => a.UserArticleLikes.Count)
+                .Take(n)
+                .Select(a => new HomeArticlesViewModel
+                {
+                    Id = a.Id.ToString(),
+                    Title = a.Title,
+                })
+                .ToList();
+        }
     }
 }

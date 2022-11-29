@@ -1,0 +1,11 @@
+﻿@model IEnumerable<HomeArticlesViewModel>
+
+<h5>Most liked articles:</h5>
+@foreach (var article in Model)
+{
+    <a class="text-dark d-flex mb-3" asp-controller="Articles" asp-action="Details" asp-route-id="@article.Id">
+        <img src="~/images/placeholder.png" width="80px" class="mx-2" alt="...">
+        <span>@article.Title</span>
+    </a>
+
+}

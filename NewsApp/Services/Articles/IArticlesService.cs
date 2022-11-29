@@ -19,6 +19,7 @@ namespace NewsApp.Services.Articles
         IEnumerable<HomeArticlesViewModel> GetLatest(int n);
 
         IEnumerable<HomeArticlesViewModel> GetMostWatched(int n);
+        IEnumerable<HomeArticlesViewModel> GetMostLiked(int n);
 
         Task<int> IncrementViewsAsync(string articleId);
 
