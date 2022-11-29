@@ -16,6 +16,8 @@ namespace NewsApp.Services.Articles
 
         IEnumerable<ArticlesViewModel> GetPerPage(int numberPerPage, int currentPage);
 
+        IEnumerable<HomeArticlesViewModel> GetLatest(int n);
+
 
 
     }

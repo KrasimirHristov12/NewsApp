@@ -26,4 +26,10 @@
 	
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\images\placeholder.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

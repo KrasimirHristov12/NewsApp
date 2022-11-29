@@ -144,5 +144,16 @@ namespace NewsApp.Services.Articles
 
 
         }
+
+        public IEnumerable<HomeArticlesViewModel> GetLatest(int n)
+        {
+            return repo.GetAll<Article>().OrderByDescending(a => a.CreatedOn).Take(n)
+                .Select(a => new HomeArticlesViewModel
+                {
+                    Id = a.Id.ToString(),
+                    Title = a.Title
+                })
+                .ToList();
+        }
     }
 }

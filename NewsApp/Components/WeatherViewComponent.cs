@@ -20,8 +20,13 @@ namespace NewsApp.Components
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var geoInfoObj = await geoInfo.GetGeoInfoDeserializedAsync();
+            if (geoInfoObj == null)
+            {
+                return View(geoInfoObj);
+            }
             var weather = await weatherService.GetWeatherAsync(geoInfoObj.Longitude, geoInfoObj.Latitude);
             return View(weather);
+           
 
         }
     }
