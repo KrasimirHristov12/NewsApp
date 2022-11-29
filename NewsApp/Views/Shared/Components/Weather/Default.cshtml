@@ -1,8 +1,23 @@
 ﻿@model WeatherViewModel
 
-<div>
-    @foreach (var info in Model.Data)
+<div class="border border-dark">
+    <h5 class="border-bottom border-dark text-center">Weather</h5>
+    @if (Model == null)
     {
-        <span>@info.CityName</span>
+        <p>No weather information about your location.</p>
     }
+    else
+    {
+        @foreach (var info in Model.Data)
+        {
+            <div>@info.CityName</div>
+            <div>Actual temp: @info.Temp °C</div>
+            <div>Feels like: @info.FeelTemp °C</div>
+            <div>Relative humidity: @info.RelativeHumidity %</div>
+            <div>@info.Weather.Description</div>
+            <div><img width="80px" src="~/images/weather/@(info.Weather.Icon).png" /></div>
+            
+        }
+    }
+
 </div>

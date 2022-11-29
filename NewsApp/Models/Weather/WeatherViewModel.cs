@@ -1,4 +1,4 @@
-﻿namespace NewsApp.Models.Weather
+﻿namespace NewsApp.Models.Weather.Weather
 {
     public class WeatherViewModel
     {

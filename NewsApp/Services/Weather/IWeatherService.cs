@@ -1,9 +1,9 @@
-﻿using NewsApp.Models.Weather;
+﻿using NewsApp.Models.Weather.Weather;
 
 namespace NewsApp.Services.Weather
 {
     public interface IWeatherService
     {
-        Task<WeatherViewModel> GetWeatherAsync(decimal longitude, decimal latitude);
+        Task<WeatherViewModel> GetWeatherAsync(double longitude, double latitude);
     }
 }

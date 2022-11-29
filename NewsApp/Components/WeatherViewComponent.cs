@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NewsApp.Data;
 using NewsApp.Services.GeoInfoProvider;
 using NewsApp.Services.Weather;
 
@@ -8,11 +9,13 @@ namespace NewsApp.Components
     {
         private readonly IWeatherService weatherService;
         private readonly IGeoInfoProviderService geoInfo;
+        private readonly ApplicationDbContext db;
 
-        public WeatherViewComponent(IWeatherService weatherService, IGeoInfoProviderService geoInfo)
+        public WeatherViewComponent(IWeatherService weatherService, IGeoInfoProviderService geoInfo, ApplicationDbContext db)
         {
             this.weatherService = weatherService;
             this.geoInfo = geoInfo;
+            this.db = db;
         }
         public async Task<IViewComponentResult> InvokeAsync()
         {

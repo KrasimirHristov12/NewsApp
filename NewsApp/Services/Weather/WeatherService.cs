@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
-using NewsApp.Models.Weather;
+using NewsApp.Models.Weather.Weather;
 using NewsApp.Services.GeoInfoProvider;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -8,7 +8,7 @@ namespace NewsApp.Services.Weather
 {
     public class WeatherService : IWeatherService
     {
-        public async Task<WeatherViewModel> GetWeatherAsync(decimal longitude, decimal latitude)
+        public async Task<WeatherViewModel> GetWeatherAsync(double longitude, double latitude)
         {
             var client = new HttpClient();
 
