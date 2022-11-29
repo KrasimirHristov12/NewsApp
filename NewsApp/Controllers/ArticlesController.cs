@@ -56,6 +56,7 @@ namespace NewsApp.Controllers
                 
                 return View(article);
             }
+
             return RedirectToAction(nameof(All), new {page = 1});
 
         }
@@ -86,6 +87,9 @@ namespace NewsApp.Controllers
             {
                 return NotFound();
             }
+
+            int views = await articlesService.IncrementViewsAsync(id);
+            ViewData["Views"] = views;
             return View(article);
         }
         public async Task<IActionResult> Update(string id)

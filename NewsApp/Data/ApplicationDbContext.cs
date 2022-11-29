@@ -14,7 +14,8 @@ namespace NewsApp.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<UserArticleLikes> UserArticleLikes { get; set; }
-       
+        public DbSet<ArticleViews> ArticleViews { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

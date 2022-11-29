@@ -18,6 +18,8 @@ namespace NewsApp.Services.Articles
 
         IEnumerable<HomeArticlesViewModel> GetLatest(int n);
 
+        Task<int> IncrementViewsAsync(string articleId);
+
 
 
     }

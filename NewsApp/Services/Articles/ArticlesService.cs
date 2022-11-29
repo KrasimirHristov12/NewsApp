@@ -155,5 +155,27 @@ namespace NewsApp.Services.Articles
                 })
                 .ToList();
         }
+
+        public async Task<int> IncrementViewsAsync(string articleId)
+        {
+            ArticleViews views = repo.GetAll<ArticleViews>().FirstOrDefault(v => v.ArticleId == Guid.Parse(articleId));
+            if (views == null)
+            {
+                views = new ArticleViews
+                {
+                    ArticleId = Guid.Parse(articleId),
+                    ViewsCount = 1,
+                };
+                await repo.AddAsync(views);
+            }
+            else
+            {
+                views.ViewsCount++;
+                await repo.UpdateAsync(views);
+            }
+
+            return views.ViewsCount;
+
+        }
     }
 }

@@ -14,7 +14,7 @@ namespace NewsApp.Components
 
         public async Task<IViewComponentResult> InvokeAsync(int n)
         {
-            var latestArticles = articlesService.GetLatest(5);
+            var latestArticles = articlesService.GetLatest(n);
             return View(latestArticles);
         }
     }
