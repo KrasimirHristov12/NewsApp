@@ -76,7 +76,9 @@ namespace NewsApp.Controllers
         [AllowAnonymous]
         public IActionResult ByCategory(string name)
         {
+
             var articles = articlesService.GetArticlesByCategory(name);
+            ViewData["name"] = name;
             return View(articles);
         }
         [AllowAnonymous]

@@ -1,0 +1,29 @@
+﻿@model StandingInfo
+
+<table class="table">
+    <tr>
+        <th>#</th>
+        <th>Team</th>
+        <th>Form</th>
+        <th>M</th>
+        <th>W</th>
+        <th>D</th>
+        <th>L</th>
+        <th>+/-</th>
+        <th>P</th>
+    </tr>
+    @foreach (var team in Model.TeamsInfo)
+    {
+        <tr>
+            <td>@team.Rank</td>
+            <td><img src="@team.TeamLogo" width="30px"/>@team.TeamName</td>
+            <td>@team.Form</td>
+            <td>@team.Played</td>
+            <td>@team.Win</td>
+            <td>@team.Draw</td>
+            <td>@team.Lose</td>
+            <td>@team.GoalsFor:@team.GoalsAgainst (@team.GoalsDiff)</td>
+            <td>@team.Points</td>
+        </tr>
+    }
+</table>

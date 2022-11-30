@@ -1,4 +1,7 @@
 ﻿@model IEnumerable<ArticlesViewModel>
 
-
+@if (ViewData["name"].ToString() == "Football")
+{
+    <vc:standings></vc:standings>
+}
 <partial name="_PresentArticles" model="@Model" />

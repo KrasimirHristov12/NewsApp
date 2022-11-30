@@ -6,6 +6,7 @@ using NewsApp.Data.Seeders;
 using NewsApp.Services.Articles;
 using NewsApp.Services.Categories;
 using NewsApp.Services.Comments;
+using NewsApp.Services.Football;
 using NewsApp.Services.GeoInfoProvider;
 using NewsApp.Services.Likes;
 using NewsApp.Services.Weather;
@@ -37,6 +38,8 @@ builder.Services.AddScoped<ICommentsService, CommentsService>();
 builder.Services.AddScoped<ILikesService, LikesService>();
 builder.Services.AddScoped<IGeoInfoProviderService, GeoInfoProviderService>();
 builder.Services.AddScoped<IWeatherService, WeatherService>();
+builder.Services.AddScoped<IFootballService, FootballService>();
+
 
 builder.Services.ConfigureApplicationCookie(configure =>
 {

@@ -6,6 +6,7 @@ namespace NewsApp.Data.Seeders
     {
         public async Task SeedAsync(ApplicationDbContext context)
         {
+
             if (!context.Categories.Any())
             {
                 for (int i = 1; i <= 10; i++)
