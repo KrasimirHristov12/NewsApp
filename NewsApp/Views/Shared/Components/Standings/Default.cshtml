@@ -1,6 +1,23 @@
 ﻿@model StandingInfo
 
-<table class="table">
+<select name="league" id="league">
+    <option value="39" selected>Premier League</option>
+    <option value="78">Bundesliga</option>
+    <option value="135">Serie A</option>
+</select>
+
+<select name="season" id="season">
+    <option value="2022" selected>2022</option>
+    <option value="2021">2021</option>
+</select>
+
+<div class="row">
+    <div class="col-4">
+
+    </div>
+</div>
+
+@*<table class="table standing">
     <tr>
         <th>#</th>
         <th>Team</th>
@@ -16,7 +33,7 @@
     {
         <tr>
             <td>@team.Rank</td>
-            <td><img src="@team.TeamLogo" width="30px"/>@team.TeamName</td>
+            <td><img src="@team.TeamLogo" width="30px" />@team.TeamName</td>
             <td>@team.Form</td>
             <td>@team.Played</td>
             <td>@team.Win</td>
@@ -26,4 +43,93 @@
             <td>@team.Points</td>
         </tr>
     }
-</table>
+</table>*@
+
+
+<script type="text/javascript" on-content-loaded="true">
+    $("#league").change(function () {
+        leagueId = $(this).val();
+        season = $("#season").val();
+        if (!isNaN(leagueId) && !isNaN(season)) {
+            X(leagueId, season);
+        }
+    }).trigger('change');
+    $("#season").change(function () {
+        season = $(this).val();
+        leagueId = $("#league").val();
+        if (!isNaN(leagueId) && !isNaN(season)) {
+            X(leagueId, season);
+        }
+
+    })
+
+    function X(leagueId, season) {
+
+        $.ajax({
+            type: "GET",
+            url: `https://api-football-beta.p.rapidapi.com/standings?league=${leagueId}&season=${season}`,
+            headers: {
+                "X-RapidAPI-Key": "fad38f7576msh239314bc28a19f2p114b83jsndf2235278d1e",
+                "X-RapidAPI-Host": "api-football-beta.p.rapidapi.com",
+            },
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                if ($(".standing").length == 0) {
+                    htmlToAppend = `<table class="table standing">
+                    <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Team</th>
+                                <th>Form</th>
+                                <th>M</th>
+                                <th>W</th>
+                                <th>D</th>
+                                <th>L</th>
+                                <th>+/-</th>
+                                <th>P</th>
+                            </tr>
+                    </thead>`;
+                    htmlToAppend += `<tbody id="standing-body">`;
+                    for (const teamInfo of data.response[0].league.standings[0]) {
+                        htmlToAppend += `<tr>
+                    <td>${teamInfo.rank}</td>
+                    <td><img src="${teamInfo.team.logo}" width="30px" />${teamInfo.team.name}</td>
+                <td>${teamInfo.form}</td>
+                  <td>${teamInfo.all.played}</td>
+                  <td>${teamInfo.all.win}</td>
+                  <td>${teamInfo.all.draw}</td>
+                  <td>${teamInfo.all.lose}</td>
+                  <td>${teamInfo.all.goals.for}:${teamInfo.all.goals.against} (${teamInfo.goalsDiff})</td>
+                  <td>${teamInfo.points}</td>
+            </tr>`
+                    }
+                    htmlToAppend += `</tbody>`
+                    $(".row .col-4").append(htmlToAppend);
+
+                }
+                else {
+                    $("#standing-body").empty();
+                    console.log(data);
+                    for (const teamInfo of data.response[0].league.standings[0]) {
+                        $("#standing-body").append(`<tr>
+                        <td>${teamInfo.rank}</td>
+                        <td><img src="${teamInfo.team.logo}" width="30px" />${teamInfo.team.name}</td>
+                    <td>${teamInfo.form}</td>
+                      <td>${teamInfo.all.played}</td>
+                      <td>${teamInfo.all.win}</td>
+                      <td>${teamInfo.all.draw}</td>
+                      <td>${teamInfo.all.lose}</td>
+                      <td>${teamInfo.all.goals.for}:${teamInfo.all.goals.against} (${teamInfo.goalsDiff})</td>
+                      <td>${teamInfo.points}</td>
+                </tr>`);
+                    }
+                }
+            },
+            error: function (errMsg) {
+                alert(errMsg);
+            }
+
+
+        });
+    }
+</script>
