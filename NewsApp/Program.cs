@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using NewsApp.Data;
 using NewsApp.Data.Models;
@@ -6,6 +7,7 @@ using NewsApp.Data.Seeders;
 using NewsApp.Services.Articles;
 using NewsApp.Services.Categories;
 using NewsApp.Services.Comments;
+using NewsApp.Services.Emails;
 using NewsApp.Services.Football;
 using NewsApp.Services.GeoInfoProvider;
 using NewsApp.Services.Likes;
@@ -39,6 +41,7 @@ builder.Services.AddScoped<ILikesService, LikesService>();
 builder.Services.AddScoped<IGeoInfoProviderService, GeoInfoProviderService>();
 builder.Services.AddScoped<IWeatherService, WeatherService>();
 builder.Services.AddScoped<IFootballService, FootballService>();
+builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
 
 
 builder.Services.ConfigureApplicationCookie(configure =>

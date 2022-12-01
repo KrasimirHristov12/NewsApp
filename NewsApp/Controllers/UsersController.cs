@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NewsApp.Data.Models;
 using NewsApp.Models.Users;
+using NewsApp.Services.Emails;
 
 namespace NewsApp.Controllers
 {
@@ -10,11 +11,14 @@ namespace NewsApp.Controllers
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly IEmailSenderService emailSender;
 
-        public UsersController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public UsersController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
+            IEmailSenderService emailSender)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.emailSender = emailSender;
         }
 
         [AllowAnonymous]
@@ -63,6 +67,7 @@ namespace NewsApp.Controllers
                 }
                 return View(model);
             }
+            await emailSender.SendEmailAsync(user.Email, user.UserName);
             return RedirectToAction(nameof(Login));
 
         }

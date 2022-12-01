@@ -1,21 +1,5 @@
 ﻿@model StandingInfo
 
-<select name="league" id="league">
-    <option value="39" selected>Premier League</option>
-    <option value="78">Bundesliga</option>
-    <option value="135">Serie A</option>
-</select>
-
-<select name="season" id="season">
-    <option value="2022" selected>2022</option>
-    <option value="2021">2021</option>
-</select>
-
-<div class="row">
-    <div class="col-4">
-
-    </div>
-</div>
 
 @*<table class="table standing">
     <tr>
@@ -51,19 +35,19 @@
         leagueId = $(this).val();
         season = $("#season").val();
         if (!isNaN(leagueId) && !isNaN(season)) {
-            X(leagueId, season);
+            retieveAndVisualizeStandings(leagueId, season);
         }
     }).trigger('change');
     $("#season").change(function () {
         season = $(this).val();
         leagueId = $("#league").val();
         if (!isNaN(leagueId) && !isNaN(season)) {
-            X(leagueId, season);
+            retieveAndVisualizeStandings(leagueId, season);
         }
 
     })
 
-    function X(leagueId, season) {
+    function retieveAndVisualizeStandings(leagueId, season) {
 
         $.ajax({
             type: "GET",
@@ -104,7 +88,7 @@
             </tr>`
                     }
                     htmlToAppend += `</tbody>`
-                    $(".row .col-4").append(htmlToAppend);
+                    $(".row .standing-container").append(htmlToAppend);
 
                 }
                 else {
