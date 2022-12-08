@@ -24,6 +24,8 @@ namespace NewsApp.Models.Articles
         [Required]
         public string Category { get; set; }
 
+        public string ImageName { get; set; }
+
         public IEnumerable<CategoriesViewModel>? Categories { get; set; }
 
     }

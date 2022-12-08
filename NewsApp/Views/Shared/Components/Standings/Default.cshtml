@@ -1,5 +1,5 @@
 ﻿@model StandingInfo
-
+@inject IConfiguration config
 
 @*<table class="table standing">
     <tr>
@@ -29,37 +29,35 @@
     }
 </table>*@
 
+<select name="leagueStanding" id="leagueStanding">
+    <option value="39" selected>Premier League</option>
+    <option value="78">Bundesliga</option>
+    <option value="135">Serie A</option>
+</select>
+
+
 
 <script type="text/javascript" on-content-loaded="true">
-    $("#league").change(function () {
+    $("#leagueStanding").change(function () {
         leagueId = $(this).val();
-        season = $("#season").val();
-        if (!isNaN(leagueId) && !isNaN(season)) {
-            retieveAndVisualizeStandings(leagueId, season);
+        if (!isNaN(leagueId)) {
+            retieveAndVisualizeStandings(leagueId);
         }
     }).trigger('change');
-    $("#season").change(function () {
-        season = $(this).val();
-        leagueId = $("#league").val();
-        if (!isNaN(leagueId) && !isNaN(season)) {
-            retieveAndVisualizeStandings(leagueId, season);
-        }
 
-    })
-
-    function retieveAndVisualizeStandings(leagueId, season) {
+    function retieveAndVisualizeStandings(leagueId, season=2022) {
 
         $.ajax({
             type: "GET",
             url: `https://api-football-beta.p.rapidapi.com/standings?league=${leagueId}&season=${season}`,
             headers: {
-                "X-RapidAPI-Key": "fad38f7576msh239314bc28a19f2p114b83jsndf2235278d1e",
+                "X-RapidAPI-Key": "@config["FootballApiKey"]",
                 "X-RapidAPI-Host": "api-football-beta.p.rapidapi.com",
             },
             contentType: "application/json; charset=utf-8",
             success: function (data) {
                 if ($(".standing").length == 0) {
-                    htmlToAppend = `<table class="table standing">
+                    htmlToAppend = `<table class="table standing fs-6">
                     <thead>
                             <tr>
                                 <th>#</th>
@@ -88,7 +86,7 @@
             </tr>`
                     }
                     htmlToAppend += `</tbody>`
-                    $(".row .standing-container").append(htmlToAppend);
+                    $(".standing-container").append(htmlToAppend);
 
                 }
                 else {

@@ -18,6 +18,8 @@
 
         [Required]
         public string Content { get; set; }
+        [Required]
+        public string ImageName { get; set; }
 
         [Required]
         public Category Category { get; set; }
@@ -25,6 +27,8 @@
         public Guid CategoryId { get; set; }
 
         public DateTime CreatedOn { get; set; }
+
+ 
 
         [Required]
         public string UserId { get; set; }

@@ -1,0 +1,146 @@
+﻿@inject IConfiguration config
+<select name="leagueFixtures" id="leagueFixtures">
+	<option value="39">Premier League</option>
+	<option value="78">Bundesliga</option>
+	<option value="135">Serie A</option>
+</select>
+
+<select name="season" id="season">
+	<option value="2022">2022</option>
+	<option value="2021">2021</option>
+</select>
+<select name="rounds" id="rounds">
+</select>
+<script type="text/javascript" on-content-loaded="true">
+	$("#leagueFixtures").val("39");
+	$("#season").val("2022");
+	getAllRounds("39", "2022");
+	$("#rounds option").eq(-1).attr('selected', 'selected');
+
+	$("#leagueFixtures").change(function () {
+		leagueId = $(this).val();
+		season = $("#season").val();
+		round = $("#rounds").val();
+		console.log(leagueId);
+		console.log(round);
+		getAndVisualizeFixtures(leagueId,round,season);
+
+
+	}).trigger('change');
+
+	$("#season").change(function () {
+		leagueId = $("#leagueFixtures").val();
+		season = $(this).val();
+		round = $("#rounds").val();
+		getAndVisualizeFixtures(leagueId, round, season);
+	});
+
+	$("#rounds").change(function () {
+		leagueId = $("#leagueFixtures").val();
+		season = $("#season").val();
+		round = $(this).val();
+		getAndVisualizeFixtures(leagueId, round, season);
+	});
+
+    function getLatestRound(leagueId, round,season = 2022) {
+        latestRound = "";
+		const settings = {
+			"async": false,
+			"crossDomain": true,
+			"url": `https://api-football-beta.p.rapidapi.com/fixtures/rounds?season=${season}&league=${leagueId}`,
+			"method": "GET",
+			"headers": {
+				"X-RapidAPI-Key": "@config["FootballApiKey"]",
+				"X-RapidAPI-Host": "api-football-beta.p.rapidapi.com"
+			}
+		};
+
+		$.ajax(settings).done(function (data) {
+			latestRound = data.response[data.response.length - 1]
+			
+		});
+		return latestRound
+    }
+	function  getAndVisualizeFixtures(leagueId, round, season= 2022) {
+		const settings = {
+			"async": true,
+			"crossDomain": true,
+			"url": `https://api-football-beta.p.rapidapi.com/fixtures?league=${leagueId}&round=${round}&season=${season}`,
+			"method": "GET",
+			"headers": {
+				"X-RapidAPI-Key": "@config["FootballApiKey"]",
+				"X-RapidAPI-Host": "api-football-beta.p.rapidapi.com"
+			}
+		};
+
+		$.ajax(settings).done(function (data) {
+			htmlToAppend = "";
+			
+			fixtureInfoArr = data.response;
+
+			if ($("#fixtures-table").length == 0) {
+
+
+
+
+				htmlToAppend = `<table class="table" id="fixtures-table">
+									<thead>
+										<tr>
+											<th>Home Team</th>
+											<th>Result</th>
+											<th>Away team</th>
+										</tr>
+									</thead>
+										<tbody id="fixturesBody">
+										</tbody>`;
+				$(".fixtures-container").append(htmlToAppend);
+								 
+			}
+			$("#fixturesBody").empty();
+			for (const fixtureInfo of fixtureInfoArr) {
+				homeTeamName = fixtureInfo.teams.home.name;
+				awayTeamName = fixtureInfo.teams.away.name;
+				homeTeamLogo = fixtureInfo.teams.home.logo;
+				awayTeamLogo = fixtureInfo.teams.away.logo;
+				homeTeamScoreFullTime = fixtureInfo.score.fulltime.home;
+				awayTeamScoreFullTime = fixtureInfo.score.fulltime.away;
+				score = homeTeamScoreFullTime == null && awayTeamScoreFullTime == null ? "NSY" : `${homeTeamScoreFullTime} - ${awayTeamScoreFullTime}`;
+				
+				$("#fixturesBody").append(`<tr>
+											<td><img src="${homeTeamLogo}" width="30px"/>${homeTeamName}</td>
+											<td>${score}</td>
+											<td><img src="${awayTeamLogo}" width="30px"/>${awayTeamName}</td>
+									</tr>`);
+
+
+			}
+
+			
+			
+			
+		});
+		
+	}
+	function getAllRounds(leagueId, season=2022) {
+			const settings = {
+				"async": false,
+				"crossDomain": true,
+				"url": `https://api-football-beta.p.rapidapi.com/fixtures/rounds?season=${season}&league=${leagueId}`,
+				"method": "GET",
+				"headers": {
+				"X-RapidAPI-Key": "@config["FootballApiKey"]",
+					"X-RapidAPI-Host": "api-football-beta.p.rapidapi.com"
+				}
+			};
+
+			$.ajax(settings).done(function (data) {
+			$("#rounds").empty();
+				for (const round of data.response) {
+					$("#rounds").append(`<option value="${round}">${round}</option>`)
+				}
+			});
+	}
+
+
+        
+</script>

@@ -4,16 +4,21 @@ using NewsApp.Data;
 using NewsApp.Data.Models;
 using NewsApp.Models.Articles;
 using NewsApp.Services.Categories;
+using NewsApp.Services.Files;
 
 namespace NewsApp.Services.Articles
 {
     public class ArticlesService : IArticlesService
     {
         private readonly IRepository repo;
+        private readonly IFilesService filesService;
+        private readonly IWebHostEnvironment webHost;
 
-        public ArticlesService(IRepository articlesRepo)
+        public ArticlesService(IRepository articlesRepo, IFilesService filesService, IWebHostEnvironment webHost)
         {
             this.repo = articlesRepo;
+            this.filesService = filesService;
+            this.webHost = webHost;
         }
 
         public IEnumerable<ArticlesViewModel> GetAll()
@@ -60,10 +65,14 @@ namespace NewsApp.Services.Articles
             {
                 Title = articleData.Title,
                 Content = articleData.Content,
+                ImageName = articleData.Image.FileName,
                 CategoryId = Guid.Parse(articleData.Category),
                 UserId = userId
             };
             await repo.AddAsync<Article>(article);
+
+            string path = Path.Combine(webHost.WebRootPath, "images", "articles");
+            await filesService.UploadAsync(path, articleData.Image);
             return true;
         }
 
@@ -95,6 +104,7 @@ namespace NewsApp.Services.Articles
                 Id = article.Id.ToString(),
                 Title = article.Title,
                 Content = article.Content,
+                ImageName = article.ImageName,
                 Category = article.CategoryId.ToString(),
             };
         }

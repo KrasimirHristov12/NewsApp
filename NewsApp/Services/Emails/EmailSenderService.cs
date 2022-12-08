@@ -5,10 +5,16 @@ namespace NewsApp.Services.Emails
 {
     public class EmailSenderService : IEmailSenderService
     {
+        private readonly IConfiguration config;
+
+        public EmailSenderService(IConfiguration config)
+        {
+            this.config = config;
+        }
         public async Task SendEmailAsync(string replyToMail, string replyToName)
         {
 
-            var apiKey = "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";
+            var apiKey = config["SendGridApiKey"];
             var client = new SendGridClient(apiKey);
             var msg = new SendGridMessage()
             {

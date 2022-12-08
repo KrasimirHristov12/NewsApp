@@ -13,6 +13,7 @@ namespace NewsApp.Controllers
     {
         private readonly ICategoriesService categoriesService;
         private readonly IArticlesService articlesService;
+        private readonly IConfiguration config;
 
         public ArticlesController(ICategoriesService categoriesService, IArticlesService articlesService)
         {
