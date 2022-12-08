@@ -29,6 +29,7 @@ namespace NewsApp.Services.Articles
                     Title = a.Title,
                     Category = a.CategoryId.ToString(),
                     Content = a.Content,
+                    UserId = a.UserId,
                     Id = a.Id.ToString(),
                 })
                 .ToList();
@@ -41,6 +42,7 @@ namespace NewsApp.Services.Articles
                 {
                     Title = a.Title,
                     Category = a.CategoryId.ToString(),
+                    UserId = a.UserId,
                     Content = a.Content,
                     Id = a.Id.ToString(),
                 })
@@ -104,6 +106,7 @@ namespace NewsApp.Services.Articles
                 Id = article.Id.ToString(),
                 Title = article.Title,
                 Content = article.Content,
+                UserId = article.UserId,
                 ImageName = article.ImageName,
                 Category = article.CategoryId.ToString(),
             };
@@ -118,6 +121,7 @@ namespace NewsApp.Services.Articles
                     Id = a.Id.ToString(),
                     Title = a.Title,
                     Content = a.Content,
+                    UserId = a.UserId,
                 })
                 .ToList();
 

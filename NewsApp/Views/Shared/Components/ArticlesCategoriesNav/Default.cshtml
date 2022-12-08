@@ -1,0 +1,14 @@
+﻿@model IEnumerable<CategoriesViewModel>
+
+<div class="dropdown">
+    <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Articles
+    </button>
+    <ul class="dropdown-menu">
+        @foreach (var cat in Model)
+        {
+            <li><a class="dropdown-item" asp-controller="Articles" asp-action="ByCategory" asp-route-name="@cat.Name">@cat.Name</a></li>
+        }
+        
+    </ul>
+</div>

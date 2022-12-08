@@ -90,6 +90,7 @@ namespace NewsApp.Controllers
             {
                 return NotFound();
             }
+            ViewData["UserId"] = User.Identity.IsAuthenticated ? User.FindFirstValue(ClaimTypes.NameIdentifier) : null;
 
             int views = await articlesService.IncrementViewsAsync(id);
             ViewData["Views"] = views;

@@ -5,12 +5,9 @@
 
 
     <div class="row">
-        <div class="col-4 standing-container">
-            @ViewData["key"]
-            <vc:standings></vc:standings>
-        </div>
 
-        <div class="col-4">
+
+        <div class="col-6">
             @foreach (var article in Model)
             {
                 <div class="article">
@@ -22,10 +19,18 @@
                 </div>
             }
         </div>
-
-        <div class="col-4 fixtures-container">
-            <vc:fixtures></vc:fixtures>
+        <div class="col-6">
+            <div class="fixtures-container">
+                <h3>Fixtures</h3>
+                <vc:fixtures></vc:fixtures>
+            </div>
+            <div class="standing-container">
+                <h3>Standings</h3>
+                <vc:standings></vc:standings>
+            </div>
         </div>
+
+        
     </div>
 }
 else 
