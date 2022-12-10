@@ -70,7 +70,11 @@ namespace NewsApp.Controllers
                 }
                 return View(model);
             }
-            await emailSender.SendEmailAsync(user.Email, user.UserName, user.Id);
+            string subject = "Confirm your account";
+            string body = $@"<p>Hi {user.Email}</p>
+                                 <p>Thanks for registering to our website!</p>
+                                  <p>In order to verify you account, please click <a href=""https://localhost:7017/users/confirm/{user.Id}"">here</a></p>""";
+            await emailSender.SendEmailAsync(user.Email, user.Email, subject, body);
             return RedirectToAction(nameof(Login));
 
         }

@@ -11,7 +11,7 @@ namespace NewsApp.Services.Emails
         {
             this.config = config;
         }
-        public async Task SendEmailAsync(string replyToMail, string replyToName, string userId)
+        public async Task SendEmailAsync(string replyToMail, string replyToName, string subject, string body)
         {
 
             var apiKey = config["SendGridApiKey"];
@@ -19,10 +19,8 @@ namespace NewsApp.Services.Emails
             var msg = new SendGridMessage()
             {
                 From = new EmailAddress("hkrasimir53@gmail.com", "Krasimir"),
-                Subject = "Confirm account",
-                HtmlContent = $@"<p>Hi {replyToName}</p>
-                                 <p>Thanks for registering to our website!</p>
-                                  <p>In order to verify you account, please click <a href=""https://localhost:7017/users/confirm/{userId}"">here</a></p>"
+                Subject = subject,
+                HtmlContent = body,
             };
             msg.AddTo(new EmailAddress(replyToMail, replyToName));
             var response = await client.SendEmailAsync(msg);

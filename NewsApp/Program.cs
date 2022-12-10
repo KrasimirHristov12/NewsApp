@@ -30,7 +30,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
     options.Password.RequireDigit = true;
 
     options.User.RequireUniqueEmail = true;
-})
+}).AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
@@ -68,7 +68,9 @@ else
 using (var serviceScope = app.Services.CreateScope())
 {
     var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     await new CategoriesSeeder().SeedAsync(dbContext);
+    await new RolesSeeder(roleManager).SeedAsync(dbContext);
 }
 
 
