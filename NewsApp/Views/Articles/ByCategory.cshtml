@@ -35,5 +35,14 @@
 }
 else 
 {
-    <div>Test</div>
+                @foreach (var article in Model)
+            {
+                <div class="article">
+                <a asp-controller="Articles" asp-action="Details" asp-route-id="@article.Id">
+                    <img src="~/images/placeholder.png" width="80px" class="mx-2" alt="...">
+                    <span>@article.Title</span>
+
+                </a>
+                </div>
+            }
 }

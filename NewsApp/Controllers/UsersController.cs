@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using NewsApp.Data;
 using NewsApp.Data.Models;
 using NewsApp.Models.Users;
 using NewsApp.Services.Emails;
@@ -12,13 +13,15 @@ namespace NewsApp.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly IEmailSenderService emailSender;
+        private readonly IRepository repository;
 
         public UsersController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
-            IEmailSenderService emailSender)
+            IEmailSenderService emailSender, IRepository repository)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.emailSender = emailSender;
+            this.repository = repository;
         }
 
         [AllowAnonymous]
@@ -55,7 +58,7 @@ namespace NewsApp.Controllers
             {
                 UserName = model.UserName,
                 Email = model.Email,
-                EmailConfirmed = true
+                EmailConfirmed = false
 
             };
             var createResult = await userManager.CreateAsync(user, model.Password);
@@ -67,7 +70,7 @@ namespace NewsApp.Controllers
                 }
                 return View(model);
             }
-            await emailSender.SendEmailAsync(user.Email, user.UserName);
+            await emailSender.SendEmailAsync(user.Email, user.UserName, user.Id);
             return RedirectToAction(nameof(Login));
 
         }
@@ -106,6 +109,22 @@ namespace NewsApp.Controllers
         {
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+        
+        [AllowAnonymous]
+
+        public async Task<IActionResult> Confirm(string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                user.EmailConfirmed = true;
+                await repository.UpdateAsync<ApplicationUser>(user);
+
+                return Content("Your account is confirmed!");
+            }
+                return NotFound();
+            
         }
     }
 }
