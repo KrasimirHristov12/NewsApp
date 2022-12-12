@@ -1,5 +1,6 @@
 ﻿namespace NewsApp.Data.Models
 {
+    using NewsApp.Common;
     using System.ComponentModel.DataAnnotations;
     public class Article
     {
@@ -13,7 +14,7 @@
         public Guid Id { get; set; }
 
         [Required]
-        [MaxLength(300)]
+        [MaxLength(DataConstants.Article.TitleMaxLength)]
         public string Title { get; set; }
 
         [Required]

@@ -32,6 +32,7 @@ namespace NewsApp.Services.Articles
                     Content = a.Content,
                     UserId = a.UserId,
                     Id = a.Id.ToString(),
+                    ImageName = a.ImageName,
                 })
                 .ToList();
         }
@@ -46,6 +47,7 @@ namespace NewsApp.Services.Articles
                     UserId = a.UserId,
                     Content = a.Content,
                     Id = a.Id.ToString(),
+                    ImageName = a.ImageName,
                 })
                 .Skip((currentPage - 1) * numberPerPage)
                 .Take(numberPerPage)
@@ -128,6 +130,7 @@ namespace NewsApp.Services.Articles
                     Title = a.Title,
                     Content = a.Content,
                     UserId = a.UserId,
+                    ImageName = a.ImageName,
                 })
                 .ToList();
 
@@ -173,13 +176,16 @@ namespace NewsApp.Services.Articles
         }
 
 
+
+
         public IEnumerable<HomeArticlesViewModel> GetLatest(int n)
         {
             return repo.GetAll<Article>().OrderByDescending(a => a.CreatedOn).Take(n)
                 .Select(a => new HomeArticlesViewModel
                 {
                     Id = a.Id.ToString(),
-                    Title = a.Title
+                    Title = a.Title,
+                    ImageName = a.ImageName,
                 })
                 .ToList();
         }
@@ -214,6 +220,7 @@ namespace NewsApp.Services.Articles
                  {
                      Id = a.Id.ToString(),
                      Title = a.Title,
+                     ImageName = a.ImageName,
                  })
                  .ToList();
         }
@@ -226,6 +233,7 @@ namespace NewsApp.Services.Articles
                 {
                     Id = a.Id.ToString(),
                     Title = a.Title,
+                    ImageName = a.ImageName,
                 })
                 .ToList();
         }

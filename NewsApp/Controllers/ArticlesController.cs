@@ -88,6 +88,11 @@ namespace NewsApp.Controllers
             ViewData["name"] = name;
             return View(articles);
         }
+        public IActionResult Yours()
+        {
+                
+            return View();
+        }
         [AllowAnonymous]
         public async Task<IActionResult> Details(string id)
         {

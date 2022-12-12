@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using NewsApp.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace NewsApp.Models.Comments
 {
@@ -11,8 +12,7 @@ namespace NewsApp.Models.Comments
         public string UserId { get; set; }
 
         [Required]
-        [MinLength(3)]
-        [MaxLength(100)]
+        [StringLength(DataConstants.Comment.ContentMaxLength, MinimumLength = DataConstants.Comment.ContentMinLength)]
         public string Content { get; set; }
 
         public string? OuterCommentId { get; set; }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using NewsApp.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace NewsApp.Data.Models
 {
@@ -12,7 +13,7 @@ namespace NewsApp.Data.Models
         public Guid Id { get; set; }
 
         [Required]
-        [MaxLength(500)]
+        [MaxLength(DataConstants.Comment.ContentMaxLength)]
         public string Content { get; set; }
         public DateTime CreatedOn { get; set; }
         [Required]
