@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NewsApp.Data.Models;
 using NewsApp.Models.Authors;
@@ -16,13 +17,22 @@ namespace NewsApp.Controllers
             this.emailSender = emailSender;
             this.userManager = userManager;
         }
+
         public IActionResult Become()
         {
+            if (User.IsInRole("Author"))
+            {
+                return Redirect($"/Identity/Account/AccessDenied?ReturnUrl=%2FAuthors%2F{nameof(Become)}");
+            }
             return View();
         }
         [HttpPost]
         public async Task<IActionResult> Become(AuthorsInputModel model)
         {
+            if (User.IsInRole("Author"))
+            {
+                return Redirect($"/Identity/Account/AccessDenied?ReturnUrl=%2FAuthors%2F{nameof(Become)}");
+            }
             if (!ModelState.IsValid)
             {
                 return View(model);

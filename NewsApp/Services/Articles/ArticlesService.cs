@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NewsApp.Data;
 using NewsApp.Data.Models;
@@ -67,24 +68,29 @@ namespace NewsApp.Services.Articles
             {
                 Title = articleData.Title,
                 Content = articleData.Content,
-                ImageName = articleData.Image.FileName,
+                ImageName = articleData.Image != null ? articleData.Image.FileName : null,
                 CategoryId = Guid.Parse(articleData.Category),
                 UserId = userId
             };
             await repo.AddAsync<Article>(article);
 
-            string path = Path.Combine(webHost.WebRootPath, "images", "articles");
-            await filesService.UploadAsync(path, articleData.Image);
+            if (article.ImageName != null)
+            {
+                string path = Path.Combine(webHost.WebRootPath, "images", "articles");
+                await filesService.UploadAsync(path, articleData.Image);
+                
+            }
             return true;
+
         }
 
-        public async Task<bool> DeleteArticleByIdAsync(string id, string userId)
+        public async Task<bool?> DeleteArticleByIdAsync(string id, string userId)
         {
             var article = await repo.GetByIdAsync<Article>(id);
             
             if (article == null)
             {
-                return false;
+                return null;
             }
             if (article.UserId != userId)
             {
@@ -126,16 +132,23 @@ namespace NewsApp.Services.Articles
                 .ToList();
 
         }
-        public async Task UpdateAsync(ArticlesViewModel articles)
+        public async Task UpdateAsync(ArticlesInputModel articleInputModel, string articleId)
         {
-            var article = await repo.GetByIdAsync<Article>(articles.Id);
-            article.Title = articles.Title;
-            article.CategoryId = Guid.Parse(articles.Category);
-            article.Content = articles.Content;
+            var article = await repo.GetByIdAsync<Article>(articleId);
+            article.Title = articleInputModel.Title;
+            article.CategoryId = Guid.Parse(articleInputModel.Category);
+            article.Content = articleInputModel.Content;
+            article.ImageName = articleInputModel.Image != null ? articleInputModel.Image.FileName : null;
+            if (article.ImageName != null)
+            {
+                string path = Path.Combine(webHost.WebRootPath, "images", "articles");
+                await filesService.UploadAsync(path, articleInputModel.Image);
+
+            }
             await repo.UpdateAsync(article);
         }
 
-        public async Task<ArticlesViewModel> GetYoursByIdAsync(string id, string userId)
+        public async Task<ArticlesInputModel> GetYoursByIdAsync(string id, string userId)
         {
             var article = await repo.GetByIdAsync<Article>(id);
             if (article == null)
@@ -147,17 +160,18 @@ namespace NewsApp.Services.Articles
                 return null;
             }
 
-            return new ArticlesViewModel()
+            return new ArticlesInputModel()
             {
-                Id = article.Id.ToString(),
                 Title = article.Title,
                 Content = article.Content,
-                Category = article.CategoryId.ToString(),
+                Category = article.CategoryId.ToString()
+
             };
 
 
 
         }
+
 
         public IEnumerable<HomeArticlesViewModel> GetLatest(int n)
         {

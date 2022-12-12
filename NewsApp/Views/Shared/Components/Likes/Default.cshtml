@@ -5,8 +5,12 @@
 
 
 <script type="text/javascript" on-content-loaded="true">
+
+
     $articleId = "@Model.ArticleId";
     $userId = "@Model.UserId";
+
+    console.log($userId);
 
     function vote(isLiked, articleId, userId) {
         $.ajax({
@@ -16,6 +20,7 @@
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (data) {
+                console.log(data);
                 oldLikeCount = parseInt($(".like-btn").text());
                 oldDislikeCount = parseInt($(".dislike-btn").text());
 

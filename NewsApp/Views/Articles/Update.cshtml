@@ -1,15 +1,23 @@
-﻿@model ArticlesViewModel
+﻿@model ArticlesInputModel
 
 
 <div asp-validation-summary="All" class="text-danger"></div>
 
 
-<form asp-action="Update" method="post">
+<form asp-action="Update" method="post" enctype="multipart/form-data">
     <div class="row">
         <div class="col-md-6">
             <label asp-for="Title"></label>
             <input asp-for="Title" class="form-control" />
             <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <label asp-for="Image"></label>
+            <input asp-for="Image" class="form-control" />
+            <span asp-validation-for="Image" class="text-danger"></span>
         </div>
     </div>
     <div class="row">
@@ -26,14 +34,14 @@
             <select asp-for="Category" class="form-select">
                 @foreach (var cat in Model.Categories)
                 {
-                    <option selected="@(cat.Id.ToString() == Model.Category ? "selected" : null)" value="@cat.Id">@cat.Name</option>
+                    <option value="@cat.Id">@cat.Name</option>
                 }
             </select>
             <span asp-validation-for="Category" class="text-danger"></span>
         </div>
     </div>
 
-    <input type="hidden" name="Id" id="Id" value="@Model.Id"/>
+    <input type="hidden" name="Id" id="Id" value="@ViewContext.RouteData.Values["id"]"/>
 
     <div class="row mt-2">
         <div class="col-md-6">

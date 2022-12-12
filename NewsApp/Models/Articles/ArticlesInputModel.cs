@@ -11,9 +11,9 @@ namespace NewsApp.Models.Articles
         [Required]
         [StringLength(300, MinimumLength = 10)]
         public string Title { get; set; }
-        [Required]
+
         [ValidateFileExtension]
-        public IFormFile Image { get; set; }
+        public IFormFile? Image { get; set; }
 
         [Display(Name = "Article Content:")]
         [DataType(DataType.MultilineText)]

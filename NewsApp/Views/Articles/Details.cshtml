@@ -16,7 +16,7 @@
     <vc:likes article-id="@Model.Id"></vc:likes>
     <div>Views: @ViewData["Views"]</div>
     <div class="article-title"><h2>@Model.Title</h2></div>
-    <div class="article-img"><img src="~/images/articles/@Model.ImageName" width="75%"/></div>
+    <div class="article-img" style="text-align:center;"><img src="@(Model.ImageName == null ? "/images/placeholder.png" : $"/images/articles/{Model.ImageName}")" width="75%" /></div>
     <p class="article-content">@Model.Content</p>
 
 </div>

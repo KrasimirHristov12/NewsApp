@@ -26,10 +26,22 @@
                         </li>
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Articles" asp-action="Add">Add article</a>
-                            </li>
+
+
                             <vc:articles-categories-nav></vc:articles-categories-nav>
+
+                            if (!User.IsInRole("Author"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Authors" asp-action="Become">Become an author</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Articles" asp-action="Add">Add article</a>
+                                </li>
+                            }
                         }
 
                     </ul>

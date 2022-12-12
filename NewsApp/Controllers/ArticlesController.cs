@@ -28,6 +28,7 @@ namespace NewsApp.Controllers
             var articles = articlesService.GetPerPage(6, page);
             return View(articles);
         }
+        [Authorize(Roles = "Author")]
         public IActionResult Add()
         {
             var articlesModel = new ArticlesInputModel()
@@ -37,6 +38,7 @@ namespace NewsApp.Controllers
             return View(articlesModel);
         }
         [HttpPost]
+        [Authorize(Roles = "Author")]
         public async Task<IActionResult> Add(ArticlesInputModel article)
         {
 
@@ -61,14 +63,18 @@ namespace NewsApp.Controllers
             return RedirectToAction(nameof(All), new {page = 1});
 
         }
-
+        [Authorize(Roles = "Author")]
         public async Task<IActionResult> Delete(string id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            bool deleteResult = await articlesService.DeleteArticleByIdAsync(id, userId);
-            if (!deleteResult)
+            bool? deleteResult = await articlesService.DeleteArticleByIdAsync(id, userId);
+            if (!deleteResult.HasValue)
             {
-                return NotFound(); // Not allowed page if user is different from the article's author, not found if invalid article
+                return NotFound();
+            }
+            if (deleteResult.Value == false)
+            {
+                return Redirect($"/Identity/Account/AccessDenied?ReturnUrl=%2FArticles%2F{nameof(Delete)}");
             }
             return Ok("This article was successfully deleted");
             
@@ -110,23 +116,22 @@ namespace NewsApp.Controllers
 
         }
         [HttpPost]
-        public async Task<IActionResult> Update(ArticlesViewModel articles)
+        public async Task<IActionResult> Update(ArticlesInputModel article, string id)
         {
-            articles.Categories = categoriesService.GetAll();
+            article.Categories = categoriesService.GetAll();
 
             if (!ModelState.IsValid)
             {
-                return View(articles);
+                return View(article);
             }
-            // Check in case the hidden field for id refers to non-existing article
-            var articleModel = await articlesService.GetByIdAsync(articles.Id);
+            var articleModel = await articlesService.GetByIdAsync(id);
 
             if (articleModel == null)
             {
                 return NotFound();
             }
-            await articlesService.UpdateAsync(articles);
-            return RedirectToAction(nameof(Details),new { id = articles.Id});
+            await articlesService.UpdateAsync(article, id);
+            return RedirectToAction(nameof(Details),new { id = id});
 
 
           

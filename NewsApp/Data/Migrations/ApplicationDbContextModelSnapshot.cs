@@ -259,7 +259,7 @@ namespace NewsApp.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Articles");
+                    b.ToTable("Articles", (string)null);
                 });
 
             modelBuilder.Entity("NewsApp.Data.Models.ArticleViews", b =>
@@ -280,7 +280,7 @@ namespace NewsApp.Data.Migrations
 
                     b.HasIndex("ArticleId");
 
-                    b.ToTable("ArticleViews");
+                    b.ToTable("ArticleViews", (string)null);
                 });
 
             modelBuilder.Entity("NewsApp.Data.Models.Category", b =>
@@ -296,7 +296,7 @@ namespace NewsApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("NewsApp.Data.Models.Comment", b =>
@@ -331,7 +331,7 @@ namespace NewsApp.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("NewsApp.Data.Models.UserArticleLikes", b =>
@@ -358,7 +358,7 @@ namespace NewsApp.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserArticleLikes");
+                    b.ToTable("UserArticleLikes", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

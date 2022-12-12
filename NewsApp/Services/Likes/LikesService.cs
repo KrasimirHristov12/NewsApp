@@ -21,13 +21,13 @@ namespace NewsApp.Services.Likes
                 DislikeCount = likes.Where(x => x.IsLiked == null ? false : !x.IsLiked.Value).Count(),
                 LikesCount = likes.Where(x => x.IsLiked == null ? false : x.IsLiked.Value).Count(),
                 ArticleId = articleId,
-               
+
             };
 
             return likesModel;
         }
 
-        public LikesViewModel CreateLike(LikesInputModel model) 
+        public LikesViewModel CreateLike(LikesInputModel model)
         {
             if (DidUserVoteForArticle(model.ArticleId, model.UserId))
             {
@@ -38,7 +38,7 @@ namespace NewsApp.Services.Likes
                 ArticleId = Guid.Parse(model.ArticleId),
                 UserId = model.UserId,
                 IsLiked = model.IsLiked,
-                
+
             };
 
             db.UserArticleLikes.Add(likeModel);

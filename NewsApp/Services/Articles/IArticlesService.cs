@@ -10,9 +10,9 @@ namespace NewsApp.Services.Articles
         IEnumerable<ArticlesViewModel> GetArticlesByCategory(string categoryName);
         Task<ArticlesViewModel> GetByIdAsync(string id);
 
-        Task<ArticlesViewModel> GetYoursByIdAsync(string id, string userId);
-        Task<bool> DeleteArticleByIdAsync(string id, string userId);
-        Task UpdateAsync(ArticlesViewModel articles);
+        Task<ArticlesInputModel> GetYoursByIdAsync(string id, string userId);
+        Task<bool?> DeleteArticleByIdAsync(string id, string userId);
+        Task UpdateAsync(ArticlesInputModel articleInputModel, string articleId);
 
         IEnumerable<ArticlesViewModel> GetPerPage(int numberPerPage, int currentPage);
 
