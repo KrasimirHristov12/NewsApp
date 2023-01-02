@@ -13,10 +13,13 @@
     console.log($userId);
 
     function vote(isLiked, articleId, userId) {
+
+        $requestVerificationToken = $("#request-verification-token-form input[name=__RequestVerificationToken]").val();
         $.ajax({
             type: "POST",
             url: "/api/likes",
             data: JSON.stringify({userId: userId, articleId: articleId, isLiked: isLiked}),
+            headers: { "RequestVerificationToken": $requestVerificationToken },
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (data) {

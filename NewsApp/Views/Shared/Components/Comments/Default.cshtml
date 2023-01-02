@@ -27,6 +27,7 @@
 
 
             <button class="btn btn-primary reply-btn">Reply</button>
+
             <div class="comment-reply-form border border-2 p-3 d-none">
                 <h5>Reply to a comment:</h5>
                 <textarea class="comment-content" placeholder="Please be as detailed as possible" rows="4" cols="50"></textarea>
@@ -52,6 +53,8 @@
 
 </div>
 
+<form method="post" id="request-verification-token-form"></form>
+
 
 
 
@@ -60,6 +63,7 @@
 
     $articleId = "@Model.ArticleId";
     $userId = "@Model.UserId";
+    
 
     $("button.submit-btn").click(function () {
         postComment($(this).parent().prev(), $articleId, $userId);
@@ -96,7 +100,7 @@
 
     function postComment(textareaContentElement, articleId, userId, outerCommentId = null) {
 
-
+        $requestVerificationToken = $("#request-verification-token-form input[name=__RequestVerificationToken]").val();
         $textAreaCommentContent = textareaContentElement;
         $commentContent = $textAreaCommentContent.val();
 
@@ -105,6 +109,7 @@
             type: "POST",
             url: "/api/comments",
             data: JSON.stringify({ articleId: articleId, userId: userId, content: $commentContent, outerCommentId: outerCommentId }),
+            headers: { "RequestVerificationToken": $requestVerificationToken },
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (data) {

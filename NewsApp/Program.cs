@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NewsApp.Data;
 using NewsApp.Data.Models;
@@ -35,7 +36,10 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
     options.User.RequireUniqueEmail = true;
 }).AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(configure =>
+{
+    configure.Filters.Add<AutoValidateAntiforgeryTokenAttribute>();
+});
 
 builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddScoped<ICategoriesService, CategoriesService>();
