@@ -21,9 +21,9 @@ namespace NewsApp.Controllers
             this.articlesService = articlesService;
         }
         [AllowAnonymous]
-        public IActionResult All(int page)
+        public IActionResult All(int page = 1)
         {
-            var totalArticlesCount = articlesService.GetAll().Count();
+            var totalArticlesCount = articlesService.GetArticlesCount();
             ViewData["ArticlesCount"] = totalArticlesCount;
             var articles = articlesService.GetPerPage(6, page);
             return View(articles);
@@ -129,9 +129,9 @@ namespace NewsApp.Controllers
             {
                 return View(article);
             }
-            var articleModel = await articlesService.GetByIdAsync(id);
+            var doesArticleExists = await articlesService.ExistsById(id);
 
-            if (articleModel == null)
+            if (!doesArticleExists)
             {
                 return NotFound();
             }

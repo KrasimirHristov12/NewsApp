@@ -5,16 +5,19 @@ namespace NewsApp.Services.Articles
 {
     public interface IArticlesService
     {
-        IEnumerable<ArticlesViewModel> GetAll();
+        int GetArticlesCount();
         Task<bool> AddAsync(ArticlesInputModel articleData, ModelStateDictionary modelState, string userId);
-        IEnumerable<ArticlesViewModel> GetArticlesByCategory(string categoryName);
-        Task<ArticlesViewModel> GetByIdAsync(string id);
+        IEnumerable<ListArticlesByCategoryViewModel> GetArticlesByCategory(string categoryName);
+
+        Task<DisplayArticleViewModel> GetByIdAsync(string id);
+
+        Task<bool> ExistsById(string id);
 
         Task<ArticlesInputModel> GetYoursByIdAsync(string id, string userId);
         Task<bool?> DeleteArticleByIdAsync(string id, string userId);
         Task UpdateAsync(ArticlesInputModel articleInputModel, string articleId);
 
-        IEnumerable<ArticlesViewModel> GetPerPage(int numberPerPage, int currentPage);
+        IEnumerable<ArticlesPagingViewModel> GetPerPage(int numberPerPage, int currentPage);
 
         IEnumerable<HomeArticlesViewModel> GetLatest(int n);
 

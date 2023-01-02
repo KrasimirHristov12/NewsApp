@@ -6,6 +6,7 @@ using NewsApp.Data.Models;
 using NewsApp.Models.Articles;
 using NewsApp.Services.Categories;
 using NewsApp.Services.Files;
+using NewsApp.Services.Mapping;
 
 namespace NewsApp.Services.Articles
 {
@@ -22,33 +23,16 @@ namespace NewsApp.Services.Articles
             this.webHost = webHost;
         }
 
-        public IEnumerable<ArticlesViewModel> GetAll()
+
+        public int GetArticlesCount()
         {
-            return repo.GetAll<Article>()
-                .Select(a => new ArticlesViewModel
-                {
-                    Title = a.Title,
-                    Category = a.CategoryId.ToString(),
-                    Content = a.Content,
-                    UserId = a.UserId,
-                    Id = a.Id.ToString(),
-                    ImageName = a.ImageName,
-                })
-                .ToList();
+            return repo.GetAll<Article>().Count();
         }
 
-        public IEnumerable<ArticlesViewModel> GetPerPage(int numberPerPage, int currentPage)
+        public IEnumerable<ArticlesPagingViewModel> GetPerPage(int numberPerPage, int currentPage)
         {
            return repo.GetAll<Article>()
-                .Select(a => new ArticlesViewModel
-                {
-                    Title = a.Title,
-                    Category = a.CategoryId.ToString(),
-                    UserId = a.UserId,
-                    Content = a.Content,
-                    Id = a.Id.ToString(),
-                    ImageName = a.ImageName,
-                })
+                .To<ArticlesPagingViewModel>()
                 .Skip((currentPage - 1) * numberPerPage)
                 .Take(numberPerPage)
                 .ToList();
@@ -74,7 +58,7 @@ namespace NewsApp.Services.Articles
                 CategoryId = Guid.Parse(articleData.Category),
                 UserId = userId
             };
-            await repo.AddAsync<Article>(article);
+            await repo.AddAsync(article);
 
             if (article.ImageName != null)
             {
@@ -102,36 +86,34 @@ namespace NewsApp.Services.Articles
             return true;
         }
 
-        public async Task<ArticlesViewModel> GetByIdAsync(string id)
+        public async Task<bool> ExistsById(string id)
+        {
+            var article = await repo.GetByIdAsync<Article>(id);
+            return article != null;
+        }
+
+        public async Task<DisplayArticleViewModel> GetByIdAsync(string id)
         {
             var article = await repo.GetByIdAsync<Article>(id);
             if (article == null)
             {
                 return null;
             }
-            return new ArticlesViewModel()
+            return new DisplayArticleViewModel()
             {
                 Id = article.Id.ToString(),
                 Title = article.Title,
                 Content = article.Content,
                 UserId = article.UserId,
                 ImageName = article.ImageName,
-                Category = article.CategoryId.ToString(),
             };
         }
 
-        public IEnumerable<ArticlesViewModel> GetArticlesByCategory(string categoryName)
+        public IEnumerable<ListArticlesByCategoryViewModel> GetArticlesByCategory(string categoryName)
         {
             return repo.GetAll<Article>()
                 .Where(a => a.Category.Name == categoryName)
-                .Select(a => new ArticlesViewModel
-                {
-                    Id = a.Id.ToString(),
-                    Title = a.Title,
-                    Content = a.Content,
-                    UserId = a.UserId,
-                    ImageName = a.ImageName,
-                })
+                .To<ListArticlesByCategoryViewModel>()
                 .ToList();
 
         }
@@ -181,12 +163,7 @@ namespace NewsApp.Services.Articles
         public IEnumerable<HomeArticlesViewModel> GetLatest(int n)
         {
             return repo.GetAll<Article>().OrderByDescending(a => a.CreatedOn).Take(n)
-                .Select(a => new HomeArticlesViewModel
-                {
-                    Id = a.Id.ToString(),
-                    Title = a.Title,
-                    ImageName = a.ImageName,
-                })
+                .To<HomeArticlesViewModel>()
                 .ToList();
         }
 
@@ -216,12 +193,7 @@ namespace NewsApp.Services.Articles
         {
             return repo.GetAll<Article>().OrderByDescending(a => a.ArticleViews.First().ViewsCount)
                  .Take(n)
-                 .Select(a => new HomeArticlesViewModel
-                 {
-                     Id = a.Id.ToString(),
-                     Title = a.Title,
-                     ImageName = a.ImageName,
-                 })
+                 .To<HomeArticlesViewModel>()
                  .ToList();
         }
 
@@ -229,12 +201,7 @@ namespace NewsApp.Services.Articles
         {
             return repo.GetAll<Article>().OrderByDescending(a => a.UserArticleLikes.Count)
                 .Take(n)
-                .Select(a => new HomeArticlesViewModel
-                {
-                    Id = a.Id.ToString(),
-                    Title = a.Title,
-                    ImageName = a.ImageName,
-                })
+                .To<HomeArticlesViewModel>()
                 .ToList();
         }
     }

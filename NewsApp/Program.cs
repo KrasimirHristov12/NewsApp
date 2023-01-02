@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using NewsApp.Data;
 using NewsApp.Data.Models;
 using NewsApp.Data.Seeders;
+using NewsApp.Models;
 using NewsApp.Services.Articles;
 using NewsApp.Services.Categories;
 using NewsApp.Services.Comments;
@@ -12,7 +13,9 @@ using NewsApp.Services.Files;
 using NewsApp.Services.Football;
 using NewsApp.Services.GeoInfoProvider;
 using NewsApp.Services.Likes;
+using NewsApp.Services.Mapping;
 using NewsApp.Services.Weather;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,7 +75,7 @@ using (var serviceScope = app.Services.CreateScope())
     await new CategoriesSeeder().SeedAsync(dbContext);
     await new RolesSeeder(roleManager).SeedAsync(dbContext);
 }
-
+AutoMapperConfig.RegisterMappings(typeof(ErrorViewModel).GetTypeInfo().Assembly);
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
