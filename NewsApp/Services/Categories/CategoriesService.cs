@@ -1,6 +1,7 @@
 ﻿using NewsApp.Data;
 using NewsApp.Data.Models;
 using NewsApp.Models.Categories;
+using NewsApp.Services.Mapping;
 
 namespace NewsApp.Services.Categories
 {
@@ -15,11 +16,7 @@ namespace NewsApp.Services.Categories
         public IEnumerable<CategoriesViewModel> GetAll()
         {
             return categoryRepo.GetAll<Category>()
-                .Select(c => new CategoriesViewModel
-                {
-                    Id = c.Id,
-                    Name = c.Name,
-                })
+                .To<CategoriesViewModel>()
                 .ToList();
            
         }

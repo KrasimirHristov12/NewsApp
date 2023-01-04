@@ -27,16 +27,16 @@ namespace NewsApp.Services.Likes
             return likesModel;
         }
 
-        public LikesViewModel CreateLike(LikesInputModel model)
+        public LikesViewModel CreateLike(LikesInputModel model, string userId)
         {
-            if (DidUserVoteForArticle(model.ArticleId, model.UserId))
+            if (DidUserVoteForArticle(model.ArticleId, userId))
             {
-                return UpdateLike(model);
+                return UpdateLike(model, userId);
             }
             var likeModel = new UserArticleLikes()
             {
                 ArticleId = Guid.Parse(model.ArticleId),
-                UserId = model.UserId,
+                UserId = userId,
                 IsLiked = model.IsLiked,
 
             };
@@ -47,13 +47,13 @@ namespace NewsApp.Services.Likes
 
         }
 
-        public LikesViewModel UpdateLike(LikesInputModel model)
+        public LikesViewModel UpdateLike(LikesInputModel model, string userId)
         {
-            if (!DidUserVoteForArticle(model.ArticleId, model.UserId))
+            if (!DidUserVoteForArticle(model.ArticleId, userId))
             {
                 return null;
             }
-            var likeModel = db.UserArticleLikes.First(x => x.ArticleId.ToString() == model.ArticleId && x.UserId == model.UserId);
+            var likeModel = db.UserArticleLikes.First(x => x.ArticleId.ToString() == model.ArticleId && x.UserId == userId);
 
             if (likeModel.IsLiked == model.IsLiked)
             {

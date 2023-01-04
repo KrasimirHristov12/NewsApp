@@ -8,17 +8,15 @@
 
 
     $articleId = "@Model.ArticleId";
-    $userId = "@Model.UserId";
 
-    console.log($userId);
 
-    function vote(isLiked, articleId, userId) {
+    function vote(isLiked, articleId) {
 
         $requestVerificationToken = $("#request-verification-token-form input[name=__RequestVerificationToken]").val();
         $.ajax({
             type: "POST",
             url: "/api/likes",
-            data: JSON.stringify({userId: userId, articleId: articleId, isLiked: isLiked}),
+            data: JSON.stringify({articleId: articleId, isLiked: isLiked}),
             headers: { "RequestVerificationToken": $requestVerificationToken },
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -54,9 +52,9 @@
 
 
     $(".like-btn").click(function () {
-        vote(true, $articleId, $userId)
+        vote(true, $articleId);
     })
     $(".dislike-btn").click(function () {
-        vote(false, $articleId, $userId);
+        vote(false, $articleId);
     })
 </script>

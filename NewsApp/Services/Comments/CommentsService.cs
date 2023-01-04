@@ -2,6 +2,7 @@
 using NewsApp.Data;
 using NewsApp.Data.Models;
 using NewsApp.Models.Comments;
+using NewsApp.Services.Mapping;
 
 namespace NewsApp.Services.Comments
 {
@@ -16,12 +17,12 @@ namespace NewsApp.Services.Comments
             this.userManager = userManager;
         }
 
-        public ICollection<DisplayCommentsViewModel> Add(CommentsInputModel commentModel)
+        public ICollection<DisplayCommentsViewModel> Add(CommentsInputModel commentModel, string userId)
         {
             var comment = new Comment()
             {
                 ArticleId = Guid.Parse(commentModel.ArticleId),
-                UserId = commentModel.UserId,
+                UserId = userId,
                 Content = commentModel.Content,
                 OuterCommentId = commentModel.OuterCommentId != null ? Guid.Parse(commentModel.OuterCommentId): null
 
@@ -36,24 +37,8 @@ namespace NewsApp.Services.Comments
         {
             return dbContext.Comments
                 .Where(c => c.ArticleId == articleId)
-                .Select(c => new DisplayCommentsViewModel
-                {
-                    Id = c.Id.ToString(),
-                    Content = c.Content,
-                    CreatedOn = c.CreatedOn.ToString("G"),
-                    OuterCommentId = c.OuterCommentId.ToString() ?? null,
-                    InnerComments = c.InnerComments.Select(ic => new DisplayCommentsViewModel
-                    {
-                        Id=ic.Id.ToString(),
-                        Content=ic.Content,
-                        UserName = ic.User.UserName,
-                        CreatedOn=ic.CreatedOn.ToString("G"),
-                        OuterCommentId = ic.OuterCommentId.ToString() ?? string.Empty,
-                        InnerComments = new List<DisplayCommentsViewModel>(),
-                        
-                    }).ToList(),
-                    UserName = c.User.UserName
-                }).ToList();
+                .To<DisplayCommentsViewModel>()
+                .ToList();
 
         }
     }

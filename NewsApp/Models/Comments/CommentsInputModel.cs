@@ -8,8 +8,6 @@ namespace NewsApp.Models.Comments
 
         [Required]
         public string ArticleId { get; set; }
-        [Required]        
-        public string UserId { get; set; }
 
         [Required]
         [StringLength(DataConstants.Comment.ContentMaxLength, MinimumLength = DataConstants.Comment.ContentMinLength)]

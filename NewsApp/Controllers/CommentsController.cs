@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NewsApp.Models.Comments;
 using NewsApp.Services.Articles;
 using NewsApp.Services.Comments;
+using System.Security.Claims;
 
 namespace NewsApp.Controllers
 {
@@ -30,9 +32,11 @@ namespace NewsApp.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult Post([FromBody]CommentsInputModel commentModel)
         {
-            var comment = commentsService.Add(commentModel);
+            var userId = this.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            var comment = commentsService.Add(commentModel, userId);
             return Ok(comment);
         }
     }

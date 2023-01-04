@@ -11,14 +11,14 @@
     @foreach (var comment in comments.Where(c => c.OuterCommentId == null))
     {
         <div id="comment-@(comment.Id)" class="comment border border-2 mb-2">
-            <span class="username fw-bold">@comment.UserName</span>
+            <span class="username fw-bold">@comment.UserUserName</span>
             <span class="createdOn fw-bold">- @comment.CreatedOn</span>
             <p class="content">@comment.Content</p>
             <div class="inner-comments">
                 @foreach (var innerComment in comment.InnerComments)
                 {
                     <div id="inner-comment-@(innerComment.Id)" class="inner-comment border border-2 mb-2 ms-2">
-                        <span class="username fw-bold">@innerComment.UserName</span>
+                        <span class="username fw-bold">@innerComment.UserUserName</span>
                         <span class="createdOn fw-bold">- @innerComment.CreatedOn</span>
                         <p class="content">@innerComment.Content</p>
                     </div>
@@ -66,13 +66,13 @@
     
 
     $("button.submit-btn").click(function () {
-        postComment($(this).parent().prev(), $articleId, $userId);
+        postComment($(this).parent().prev(), $articleId);
     });
 
     $(document).on("click", "button.reply-submit-btn", function () {
         $commentReplyTextarea = $(this).parent().prev();
         $outerCommentId = $(this).closest(".comment").attr("id").match("\-(.*)$")[1];
-        postComment($commentReplyTextarea, $articleId, $userId, $outerCommentId);
+        postComment($commentReplyTextarea, $articleId, $outerCommentId);
     });
 
 
@@ -98,7 +98,7 @@
     }
 
 
-    function postComment(textareaContentElement, articleId, userId, outerCommentId = null) {
+    function postComment(textareaContentElement, articleId, outerCommentId = null) {
 
         $requestVerificationToken = $("#request-verification-token-form input[name=__RequestVerificationToken]").val();
         $textAreaCommentContent = textareaContentElement;
@@ -108,7 +108,7 @@
         $.ajax({
             type: "POST",
             url: "/api/comments",
-            data: JSON.stringify({ articleId: articleId, userId: userId, content: $commentContent, outerCommentId: outerCommentId }),
+            data: JSON.stringify({ articleId: articleId, content: $commentContent, outerCommentId: outerCommentId }),
             headers: { "RequestVerificationToken": $requestVerificationToken },
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -135,7 +135,7 @@
             if (comments[i].outerCommentId != null) {
                 $innerCommentHtml =
                     `<div id="inner-comment-${comments[i].id}" class="inner-comment border border-2 mb-2 ms-2">
-                        <span class="username fw-bold">${comments[i].userName}</span>
+                            <span class="username fw-bold">${comments[i].userUserName}</span>
                          <span class="createdOn fw-bold">- ${comments[i].createdOn}</span>
                           <p class="content">${comments[i].content}</p>
                     </div>`;
@@ -145,7 +145,7 @@
             else {
                 $outerCommentHtml = 
                 `<div id="comment-${comments[i].id}" class="comment border border-2 mb-2">
-                    <span class="username fw-bold">${comments[i].userName}</span>
+                    <span class="username fw-bold">${comments[i].userUserName}</span>
                     <span class="createdOn fw-bold">- ${comments[i].createdOn}</span>
                     <p class="content">${comments[i].content}</p>
                     <div class="inner-comments"></div>
