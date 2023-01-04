@@ -40,11 +40,6 @@ namespace NewsApp.Services.Articles
 
         public async Task<bool> AddAsync(ArticlesInputModel articleData, ModelStateDictionary modelState, string userId)
         {
-
-            if (await repo.GetByIdAsync<Category>(articleData.Category) == null)
-            {
-                modelState.AddModelError("Category", "The category does not exist!");
-            }
             if (!modelState.IsValid)
             {
                 return false;

@@ -20,5 +20,10 @@ namespace NewsApp.Services.Categories
                 .ToList();
            
         }
+        public async Task<bool> ExistsByIdAsync(string id)
+        {
+            var category = await categoryRepo.GetByIdAsync<Category>(id);
+            return category != null;
+        }
     }
 }

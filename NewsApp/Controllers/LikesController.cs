@@ -20,10 +20,10 @@ namespace NewsApp.Controllers
         }
         [HttpPost]
         [Authorize]
-        public IActionResult Post(LikesInputModel model)
+        public async Task<IActionResult> Post(LikesInputModel model)
         {
             string userId = this.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            var likeModel = likesService.CreateLike(model, userId);
+            var likeModel = await likesService.CreateLikeAsync(model, userId);
             if (likeModel == null)
             {
                 return BadRequest();

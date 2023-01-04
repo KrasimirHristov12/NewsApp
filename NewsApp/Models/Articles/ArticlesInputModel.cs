@@ -21,8 +21,10 @@ namespace NewsApp.Models.Articles
         [Required]
         [MinLength(DataConstants.Article.ContentMinLength)]
         public string Content { get; set; }
+
         [Display(Name = WebConstants.Article.CategoryDisplay)]
         [Required]
+        [DoesCategoryExistInDb]
         public string Category { get; set; }
 
 

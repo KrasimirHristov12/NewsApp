@@ -33,10 +33,10 @@ namespace NewsApp.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult Post([FromBody]CommentsInputModel commentModel)
+        public async Task<IActionResult> Post([FromBody]CommentsInputModel commentModel)
         {
             var userId = this.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            var comment = commentsService.Add(commentModel, userId);
+            var comment = await commentsService.AddAsync(commentModel, userId);
             return Ok(comment);
         }
     }

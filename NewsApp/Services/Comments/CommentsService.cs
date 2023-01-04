@@ -8,16 +8,16 @@ namespace NewsApp.Services.Comments
 {
     public class CommentsService : ICommentsService
     {
-        private readonly ApplicationDbContext dbContext;
+        private readonly IRepository repo;
         private readonly UserManager<ApplicationUser> userManager;
 
-        public CommentsService(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager)
+        public CommentsService(IRepository repo, UserManager<ApplicationUser> userManager)
         {
-            this.dbContext = dbContext;
+            this.repo = repo;
             this.userManager = userManager;
         }
 
-        public ICollection<DisplayCommentsViewModel> Add(CommentsInputModel commentModel, string userId)
+        public async Task<ICollection<DisplayCommentsViewModel>> AddAsync(CommentsInputModel commentModel, string userId)
         {
             var comment = new Comment()
             {
@@ -28,14 +28,13 @@ namespace NewsApp.Services.Comments
 
 
             };
-            dbContext.Comments.Add(comment);
-            dbContext.SaveChanges();
+            await repo.AddAsync(comment);
             return GetAllForArticle(Guid.Parse(commentModel.ArticleId));
         }
 
         public ICollection<DisplayCommentsViewModel> GetAllForArticle(Guid articleId)
         {
-            return dbContext.Comments
+            return repo.GetAll<Comment>()
                 .Where(c => c.ArticleId == articleId)
                 .To<DisplayCommentsViewModel>()
                 .ToList();
