@@ -1,5 +1,17 @@
 ﻿@model IEnumerable<ArticlesPagingViewModel>
+@if (TempData.ContainsKey("AddedSuccessfully"))
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["AddedSuccessfully"]
+    </div>
+}
 
+@if (TempData.ContainsKey("DeletedSuccessfully"))
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["DeletedSuccessfully"]
+    </div>
+}
 
 <div class="articles-container">
     @if (Model.Count() == 0)

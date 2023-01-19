@@ -1,5 +1,12 @@
 ﻿@model DisplayArticleViewModel
 
+@if (TempData.ContainsKey("UpdatedSuccessfully"))
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["UpdatedSuccessfully"]
+    </div>
+}
+
 <div class="article-container">
     @if (ViewData["UserId"] != null)
     {

@@ -59,7 +59,7 @@ namespace NewsApp.Controllers
                 
                 return View(article);
             }
-
+            TempData["AddedSuccessfully"] = "This article was created successfully!";
             return RedirectToAction(nameof(All), new {page = 1});
 
         }
@@ -76,8 +76,10 @@ namespace NewsApp.Controllers
             {
                 return Redirect($"/Identity/Account/AccessDenied?ReturnUrl=%2FArticles%2F{nameof(Delete)}");
             }
-            return Ok("This article was successfully deleted");
-            
+            TempData["DeletedSuccessfully"] = "This article was deleted successfully!";
+            return RedirectToAction(nameof(All), new { page = 1 });
+
+
         }
 
         [AllowAnonymous]
@@ -136,6 +138,7 @@ namespace NewsApp.Controllers
                 return NotFound();
             }
             await articlesService.UpdateAsync(article, id);
+            TempData["UpdatedSuccessfully"] = "This article was updated successfully!";
             return RedirectToAction(nameof(Details),new { id = id});
 
 
