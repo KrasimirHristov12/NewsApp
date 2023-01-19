@@ -58,6 +58,14 @@ builder.Services.ConfigureApplicationCookie(configure =>
     configure.LoginPath = "/Users/Login";
 });
 
+builder.Services.AddDistributedSqlServerCache(options =>
+{
+    options.ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.SchemaName = "dbo";
+    options.TableName = "DistributedCache";
+    
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -83,6 +91,7 @@ AutoMapperConfig.RegisterMappings(typeof(ErrorViewModel).GetTypeInfo().Assembly)
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 
 app.UseRouting();
 
