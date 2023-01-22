@@ -4,7 +4,7 @@ namespace NewsApp.Services.Categories
 {
     public interface ICategoriesService
     {
-        IEnumerable<CategoriesViewModel> GetAll();
+        IEnumerable<T> GetAll<T>();
         Task<bool> ExistsByIdAsync(string id);
     }
 }

@@ -7,24 +7,26 @@ namespace NewsApp.Services.Articles
     {
         int GetArticlesCount();
         Task<bool> AddAsync(ArticlesInputModel articleData, ModelStateDictionary modelState, string userId);
-        IEnumerable<ListArticlesByCategoryViewModel> GetArticlesByCategory(string categoryName);
+        IEnumerable<T> GetArticlesByCategory<T>(string categoryName);
 
-        Task<DisplayArticleViewModel> GetByIdAsync(string id);
+        Task<T> GetByIdAsync<T>(string id);
+
 
         Task<bool> ExistsById(string id);
 
-        Task<ArticlesInputModel> GetYoursByIdAsync(string id, string userId);
+        Task<T?> GetYoursByIdAsync<T>(string id, string userId);
         Task<bool?> DeleteArticleByIdAsync(string id, string userId);
         Task UpdateAsync(ArticlesInputModel articleInputModel, string articleId);
 
-        IEnumerable<ArticlesPagingViewModel> GetPerPage(int numberPerPage, int currentPage);
+        IEnumerable<T> GetPerPage<T>(int numberPerPage, int currentPage);
 
-        IEnumerable<HomeArticlesViewModel> GetLatest(int n);
+        IEnumerable<T> GetLatest<T>(int n);
 
-        IEnumerable<HomeArticlesViewModel> GetMostWatched(int n);
-        IEnumerable<HomeArticlesViewModel> GetMostLiked(int n);
+        IEnumerable<T> GetMostWatched<T>(int n);
+        IEnumerable<T> GetMostLiked<T>(int n);
 
         Task<int> IncrementViewsAsync(string articleId);
+
 
 
 

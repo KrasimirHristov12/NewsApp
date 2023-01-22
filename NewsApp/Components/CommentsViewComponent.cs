@@ -15,13 +15,13 @@ namespace NewsApp.Components
         {
             this.commentsService = commentsService;
         }
-        public async Task<IViewComponentResult> InvokeAsync(string articleId)
+        public IViewComponentResult Invoke(string articleId)
         {
             var comments = new CommentsViewModel()
             {
                 ArticleId = articleId,
                 UserId = UserClaimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier),
-                Comments = commentsService.GetAllForArticle(Guid.Parse(articleId))
+                Comments = commentsService.GetAllForArticle<DisplayCommentsViewModel>(Guid.Parse(articleId))
             };
             return View(comments);
 

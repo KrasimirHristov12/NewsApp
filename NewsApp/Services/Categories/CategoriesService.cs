@@ -13,10 +13,10 @@ namespace NewsApp.Services.Categories
         {
             this.categoryRepo = categoryRepo;
         }
-        public IEnumerable<CategoriesViewModel> GetAll()
+        public IEnumerable<T> GetAll<T>()
         {
             return categoryRepo.GetAll<Category>()
-                .To<CategoriesViewModel>()
+                .To<T>()
                 .ToList();
            
         }

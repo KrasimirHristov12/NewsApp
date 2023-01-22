@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NewsApp.Models.Categories;
 using NewsApp.Services.Categories;
 
 namespace NewsApp.Components
@@ -11,9 +12,9 @@ namespace NewsApp.Components
         {
             this.categoriesService = categoriesService;
         }
-        public async Task<IViewComponentResult> InvokeAsync()
+        public IViewComponentResult Invoke()
         {
-            var categoriesModel = categoriesService.GetAll();
+            var categoriesModel = categoriesService.GetAll<CategoriesViewModel>();
             return View(categoriesModel);
         }
     }

@@ -13,7 +13,6 @@ namespace NewsApp.Controllers
     {
         private readonly ICategoriesService categoriesService;
         private readonly IArticlesService articlesService;
-        private readonly IConfiguration config;
 
         public ArticlesController(ICategoriesService categoriesService, IArticlesService articlesService)
         {
@@ -25,7 +24,7 @@ namespace NewsApp.Controllers
         {
             var totalArticlesCount = articlesService.GetArticlesCount();
             ViewData["ArticlesCount"] = totalArticlesCount;
-            var articles = articlesService.GetPerPage(6, page);
+            var articles = articlesService.GetPerPage<ArticlesPagingViewModel>(6, page);
             return View(articles);
         }
         [Authorize(Roles = "Author")]
@@ -33,7 +32,7 @@ namespace NewsApp.Controllers
         {
             var articlesModel = new ArticlesInputModel()
             {
-                Categories = categoriesService.GetAll()
+                Categories = categoriesService.GetAll<CategoriesViewModel>()
             };
             return View(articlesModel);
         }
@@ -42,7 +41,7 @@ namespace NewsApp.Controllers
         public async Task<IActionResult> Add(ArticlesInputModel article)
         {
 
-            article.Categories = categoriesService.GetAll();
+            article.Categories = categoriesService.GetAll<CategoriesViewModel>();
 
             
 
@@ -86,7 +85,7 @@ namespace NewsApp.Controllers
         public IActionResult ByCategory(string name)
         {
 
-            var articles = articlesService.GetArticlesByCategory(name);
+            var articles = articlesService.GetArticlesByCategory<ListArticlesByCategoryViewModel>(name);
             ViewData["name"] = name;
             return View(articles);
         }
@@ -98,7 +97,7 @@ namespace NewsApp.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Details(string id)
         {
-            var article = await articlesService.GetByIdAsync(id);
+            var article = await articlesService.GetByIdAsync<DisplayArticleViewModel>(id);
             if (article == null)
             {
                 return NotFound();
@@ -112,12 +111,12 @@ namespace NewsApp.Controllers
         public async Task<IActionResult> Update(string id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var article =  await articlesService.GetYoursByIdAsync(id, userId);  
+            var article =  await articlesService.GetYoursByIdAsync<ArticlesInputModel>(id, userId);  
             if (article == null)
             {
                 return NotFound();
             }
-            article.Categories = categoriesService.GetAll();
+            article.Categories = categoriesService.GetAll<CategoriesViewModel>();
             return View(article);
 
 
@@ -125,7 +124,7 @@ namespace NewsApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Update(ArticlesInputModel article, string id)
         {
-            article.Categories = categoriesService.GetAll();
+            article.Categories = categoriesService.GetAll<CategoriesViewModel>();
 
             if (!ModelState.IsValid)
             {

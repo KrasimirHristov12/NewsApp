@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NewsApp.Models.Articles;
 using NewsApp.Models.Comments;
 using NewsApp.Services.Articles;
 using NewsApp.Services.Comments;
@@ -22,10 +23,10 @@ namespace NewsApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery]string articleId)
         {
-            var article = await articlesService.GetByIdAsync(articleId);
+            var article = await articlesService.GetByIdAsync<DisplayArticleViewModel>(articleId);
             if (article != null)
             {
-                return Ok(commentsService.GetAllForArticle(Guid.Parse(articleId)));
+                return Ok(commentsService.GetAllForArticle<DisplayCommentsViewModel>(Guid.Parse(articleId)));
             }
             return NotFound();
             
@@ -36,7 +37,7 @@ namespace NewsApp.Controllers
         public async Task<IActionResult> Post([FromBody]CommentsInputModel commentModel)
         {
             var userId = this.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            var comment = await commentsService.AddAsync(commentModel, userId);
+            var comment = await commentsService.AddAsync<DisplayCommentsViewModel>(commentModel, userId);
             return Ok(comment);
         }
     }

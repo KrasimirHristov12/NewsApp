@@ -14,7 +14,7 @@ namespace NewsApp.Components
         {
             this.likesService = likesService;
         }
-        public async Task<IViewComponentResult> InvokeAsync(string articleId)
+        public  IViewComponentResult Invoke(string articleId)
         {
 
             var likesModel = likesService.GetAllLikesForArticle(articleId);

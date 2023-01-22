@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using NewsApp.Data;
 using NewsApp.Data.Models;
 using NewsApp.Models.Comments;
@@ -10,33 +11,29 @@ namespace NewsApp.Services.Comments
     {
         private readonly IRepository repo;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly IMapper mapper;
 
-        public CommentsService(IRepository repo, UserManager<ApplicationUser> userManager)
+        public CommentsService(IRepository repo, UserManager<ApplicationUser> userManager,
+            IMapper mapper)
         {
             this.repo = repo;
             this.userManager = userManager;
+            this.mapper = mapper;
         }
 
-        public async Task<ICollection<DisplayCommentsViewModel>> AddAsync(CommentsInputModel commentModel, string userId)
+        public async Task<ICollection<T>> AddAsync<T>(CommentsInputModel commentModel, string userId)
         {
-            var comment = new Comment()
-            {
-                ArticleId = Guid.Parse(commentModel.ArticleId),
-                UserId = userId,
-                Content = commentModel.Content,
-                OuterCommentId = commentModel.OuterCommentId != null ? Guid.Parse(commentModel.OuterCommentId): null
-
-
-            };
+            var comment = mapper.Map<Comment>(commentModel);
+            comment.UserId = userId;
             await repo.AddAsync(comment);
-            return GetAllForArticle(Guid.Parse(commentModel.ArticleId));
+            return GetAllForArticle<T>(Guid.Parse(commentModel.ArticleId));
         }
 
-        public ICollection<DisplayCommentsViewModel> GetAllForArticle(Guid articleId)
+        public ICollection<T> GetAllForArticle<T>(Guid articleId)
         {
             return repo.GetAll<Comment>()
                 .Where(c => c.ArticleId == articleId)
-                .To<DisplayCommentsViewModel>()
+                .To<T>()
                 .ToList();
 
         }

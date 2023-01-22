@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NewsApp.Models.Articles;
 using NewsApp.Services.Articles;
 
 namespace NewsApp.Components
@@ -12,9 +13,9 @@ namespace NewsApp.Components
             this.articlesService = articlesService;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(int n)
+        public IViewComponentResult Invoke(int n)
         {
-            var latestArticles = articlesService.GetLatest(n);
+            var latestArticles = articlesService.GetLatest<HomeArticlesViewModel>(n);
             return View(latestArticles);
         }
     }

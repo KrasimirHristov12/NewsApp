@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NewsApp.Data;
@@ -15,12 +16,17 @@ namespace NewsApp.Services.Articles
         private readonly IRepository repo;
         private readonly IFilesService filesService;
         private readonly IWebHostEnvironment webHost;
+        private readonly IMapper mapper;
 
-        public ArticlesService(IRepository articlesRepo, IFilesService filesService, IWebHostEnvironment webHost)
+        public ArticlesService(IRepository articlesRepo,
+            IFilesService filesService,
+            IWebHostEnvironment webHost,
+            IMapper mapper)
         {
             this.repo = articlesRepo;
             this.filesService = filesService;
             this.webHost = webHost;
+            this.mapper = mapper;
         }
 
 
@@ -29,13 +35,13 @@ namespace NewsApp.Services.Articles
             return repo.GetAll<Article>().Count();
         }
 
-        public IEnumerable<ArticlesPagingViewModel> GetPerPage(int numberPerPage, int currentPage)
+        public IEnumerable<T> GetPerPage<T>(int numberPerPage, int currentPage)
         {
-           return repo.GetAll<Article>()
-                .To<ArticlesPagingViewModel>()
-                .Skip((currentPage - 1) * numberPerPage)
-                .Take(numberPerPage)
-                .ToList();
+            return repo.GetAll<Article>()
+                 .To<T>()
+                 .Skip((currentPage - 1) * numberPerPage)
+                 .Take(numberPerPage)
+                 .ToList();
         }
 
         public async Task<bool> AddAsync(ArticlesInputModel articleData, ModelStateDictionary modelState, string userId)
@@ -59,7 +65,7 @@ namespace NewsApp.Services.Articles
             {
                 string path = Path.Combine(webHost.WebRootPath, "images", "articles");
                 await filesService.UploadAsync(path, articleData.Image);
-                
+
             }
             return true;
 
@@ -68,7 +74,7 @@ namespace NewsApp.Services.Articles
         public async Task<bool?> DeleteArticleByIdAsync(string id, string userId)
         {
             var article = await repo.GetByIdAsync<Article>(id);
-            
+
             if (article == null)
             {
                 return null;
@@ -87,28 +93,18 @@ namespace NewsApp.Services.Articles
             return article != null;
         }
 
-        public async Task<DisplayArticleViewModel> GetByIdAsync(string id)
+        public async Task<T> GetByIdAsync<T>(string id)
         {
             var article = await repo.GetByIdAsync<Article>(id);
-            if (article == null)
-            {
-                return null;
-            }
-            return new DisplayArticleViewModel()
-            {
-                Id = article.Id.ToString(),
-                Title = article.Title,
-                Content = article.Content,
-                UserId = article.UserId,
-                ImageName = article.ImageName,
-            };
+            return mapper.Map<T>(article);
+
         }
 
-        public IEnumerable<ListArticlesByCategoryViewModel> GetArticlesByCategory(string categoryName)
+        public IEnumerable<T> GetArticlesByCategory<T>(string categoryName)
         {
             return repo.GetAll<Article>()
                 .Where(a => a.Category.Name == categoryName)
-                .To<ListArticlesByCategoryViewModel>()
+                .To<T>()
                 .ToList();
 
         }
@@ -128,43 +124,35 @@ namespace NewsApp.Services.Articles
             await repo.UpdateAsync(article);
         }
 
-        public async Task<ArticlesInputModel> GetYoursByIdAsync(string id, string userId)
+        public async Task<T?> GetYoursByIdAsync<T>(string id, string userId)
         {
             var article = await repo.GetByIdAsync<Article>(id);
             if (article == null)
             {
-                return null;
+                return default(T);
             }
             if (article.UserId != userId)
             {
-                return null;
+                return default(T);
             }
 
-            return new ArticlesInputModel()
-            {
-                Title = article.Title,
-                Content = article.Content,
-                Category = article.CategoryId.ToString()
-
-            };
-
-
+            return mapper.Map<T>(article);
 
         }
 
 
 
 
-        public IEnumerable<HomeArticlesViewModel> GetLatest(int n)
+        public IEnumerable<T> GetLatest<T>(int n)
         {
             return repo.GetAll<Article>().OrderByDescending(a => a.CreatedOn).Take(n)
-                .To<HomeArticlesViewModel>()
+                .To<T>()
                 .ToList();
         }
 
         public async Task<int> IncrementViewsAsync(string articleId)
         {
-            ArticleViews views = repo.GetAll<ArticleViews>().FirstOrDefault(v => v.ArticleId == Guid.Parse(articleId));
+            ArticleViews? views = repo.GetAll<ArticleViews>().FirstOrDefault(v => v.ArticleId == Guid.Parse(articleId));
             if (views == null)
             {
                 views = new ArticleViews
@@ -184,19 +172,19 @@ namespace NewsApp.Services.Articles
 
         }
 
-        public IEnumerable<HomeArticlesViewModel> GetMostWatched(int n)
+        public IEnumerable<T> GetMostWatched<T>(int n)
         {
             return repo.GetAll<Article>().OrderByDescending(a => a.ArticleViews.First().ViewsCount)
                  .Take(n)
-                 .To<HomeArticlesViewModel>()
+                 .To<T>()
                  .ToList();
         }
 
-        public IEnumerable<HomeArticlesViewModel> GetMostLiked(int n)
+        public IEnumerable<T> GetMostLiked<T>(int n)
         {
             return repo.GetAll<Article>().OrderByDescending(a => a.UserArticleLikes.Count)
                 .Take(n)
-                .To<HomeArticlesViewModel>()
+                .To<T>()
                 .ToList();
         }
     }

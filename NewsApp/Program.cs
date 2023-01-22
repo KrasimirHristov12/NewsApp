@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,8 @@ using NewsApp.Data;
 using NewsApp.Data.Models;
 using NewsApp.Data.Seeders;
 using NewsApp.Models;
+using NewsApp.Models.Articles;
+using NewsApp.Models.Comments;
 using NewsApp.Services.Articles;
 using NewsApp.Services.Categories;
 using NewsApp.Services.Comments;
@@ -51,6 +54,21 @@ builder.Services.AddScoped<IWeatherService, WeatherService>();
 builder.Services.AddScoped<IFootballService, FootballService>();
 builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
 builder.Services.AddScoped<IFilesService, FilesService>();
+builder.Services.AddAutoMapper(typeof(Program));
+
+var mapperConfiguration = new MapperConfiguration(cfg =>
+{
+    cfg.CreateMap<Article, DisplayArticleViewModel>();
+    cfg.CreateMap<CommentsInputModel, Comment>()
+                    .ForMember(c => c.OuterCommentId, opt =>
+                    {
+                        opt.MapFrom(vm => vm.OuterCommentId == null ? null : vm.OuterCommentId);
+                    }); 
+});
+IMapper mapper = mapperConfiguration.CreateMapper();
+builder.Services.AddSingleton(mapper);
+
+
 
 
 builder.Services.ConfigureApplicationCookie(configure =>
