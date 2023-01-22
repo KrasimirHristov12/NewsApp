@@ -66,7 +66,7 @@ namespace NewsApp.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            bool? deleteResult = await articlesService.DeleteArticleByIdAsync(id, userId);
+            bool? deleteResult = await articlesService.DeleteArticleByIdAsync(id, false, userId);
             if (!deleteResult.HasValue)
             {
                 return NotFound();

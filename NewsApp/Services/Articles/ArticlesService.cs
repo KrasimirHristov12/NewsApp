@@ -71,7 +71,7 @@ namespace NewsApp.Services.Articles
 
         }
 
-        public async Task<bool?> DeleteArticleByIdAsync(string id, string userId)
+        public async Task<bool?> DeleteArticleByIdAsync(string id, bool isAdmin,  string userId)
         {
             var article = await repo.GetByIdAsync<Article>(id);
 
@@ -79,7 +79,7 @@ namespace NewsApp.Services.Articles
             {
                 return null;
             }
-            if (article.UserId != userId)
+            if (article.UserId != userId && !isAdmin)
             {
                 return false;
             }

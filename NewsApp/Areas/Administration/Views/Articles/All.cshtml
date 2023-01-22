@@ -1,0 +1,15 @@
+﻿@model IEnumerable<DisplayArticlesToAdminViewModel>
+
+<table>
+    <tr>
+        <th>Article</th>
+        <th>Action</th>
+    </tr>
+    @foreach (var article in Model)
+    {
+        <tr>
+            <td><a asp-area="" asp-controller="Articles" asp-action="Details" asp-route-id="@article.Id">@article.Title</a></td>
+            <td><a class="btn btn-danger" asp-area="Administration" asp-controller="Articles" asp-action="Delete" asp-route-id="@article.Id">Delete</a></td>
+        </tr>
+    }
+</table>
