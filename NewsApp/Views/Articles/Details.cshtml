@@ -1,5 +1,7 @@
 ﻿@model DisplayArticleViewModel
 
+
+
 @if (TempData.ContainsKey("UpdatedSuccessfully"))
 {
     <div class="alert alert-success" role="alert">
@@ -10,11 +12,43 @@
 <div class="article-container">
     @if (ViewData["UserId"] != null)
     {
-        if (ViewData["UserId"].ToString() == Model.UserId)
+        if (ViewData["UserId"].ToString() == Model.UserId || User.IsInRole(WebConstants.Role.AdminRoleName))
         {
             <div class="row">
-                <a class="btn btn-danger col-md-3 me-3" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
-                <a class="btn btn-primary col-md-3" asp-action="Update" asp-route-id="@Model.Id">Update</a>
+                <button class="btn btn-danger col-md-3 me-3" asp-action="Delete" asp-route-id="@Model.Id" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+                <a class="btn btn-primary col-md-3" asp-action="Update" asp-route-id="@Model.Id" data-bs-toggle="modal" data-bs-target="#updateModal">Update</a>
+            </div>
+            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Delete article</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to delete this article?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Yes</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="updateModal" class="modal fade" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5">Update article</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <vc:update-article-form article-id="@Model.Id" user-id="@ViewData["UserId"]"></vc:update-article-form>
+
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
             </div>
         }
 

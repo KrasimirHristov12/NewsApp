@@ -6,17 +6,17 @@ namespace NewsApp.Services.Articles
     public interface IArticlesService
     {
         int GetArticlesCount();
-        Task<bool> AddAsync(ArticlesInputModel articleData, ModelStateDictionary modelState, string userId);
+        Task<bool> AddAsync(AddArticlesInputModel articleData, ModelStateDictionary modelState, string userId);
         IEnumerable<T> GetArticlesByCategory<T>(string categoryName);
 
         Task<T> GetByIdAsync<T>(string id);
 
 
-        Task<bool> ExistsById(string id);
+        Task<bool> ExistsAndIfYoursById(string id, string userId);
 
-        Task<T?> GetYoursByIdAsync<T>(string id, string userId);
-        Task<bool?> DeleteArticleByIdAsync(string id, bool isAdmin, string userId);
-        Task UpdateAsync(ArticlesInputModel articleInputModel, string articleId);
+        Task<T?> GetArticleIfYours<T>(string id, string userId);
+        Task<bool?> DeleteArticleByIdAsync(string id, string userId);
+        Task UpdateAsync(UpdateArticleInputModel articleInputModel, string articleId);
 
         IEnumerable<T> GetPerPage<T>(int numberPerPage, int currentPage);
 

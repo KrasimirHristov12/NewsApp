@@ -1,12 +1,17 @@
-﻿@model UpdateArticleInputModel
+﻿@using NewsApp.Services.Categories
+@model UpdateArticleInputModel
 
+@inject ICategoriesService catService
+@{
+    var Categories = catService.GetAll<CategoriesViewModel>();
+}
 
 <div asp-validation-summary="All" class="text-danger"></div>
 
 
 <form asp-action="Update" method="post" enctype="multipart/form-data">
     <div class="row">
-        <div class="col-md-6">
+        <div>
             <label asp-for="Title"></label>
             <input asp-for="Title" class="form-control" />
             <span asp-validation-for="Title" class="text-danger"></span>
@@ -14,7 +19,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-6">
+        <div>
             <label asp-for="Content"></label>
             <textarea asp-for="Content" class="form-control"></textarea>
             <span asp-validation-for="Content" class="text-danger"></span>
@@ -22,10 +27,10 @@
     </div>
 
     <div class="row">
-        <div class="col-md-6">
+        <div>
             <label asp-for="CategoryId"></label>
             <select asp-for="CategoryId" class="form-select">
-                @foreach (var cat in Model.Categories)
+                @foreach (var cat in Categories)
                 {
                     <option value="@cat.Id">@cat.Name</option>
                 }

@@ -6,6 +6,7 @@ using NewsApp.Models.Categories;
 using NewsApp.Data.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using NewsApp.Common;
 
 namespace NewsApp.Controllers
 {
@@ -27,7 +28,7 @@ namespace NewsApp.Controllers
             var articles = articlesService.GetPerPage<ArticlesPagingViewModel>(6, page);
             return View(articles);
         }
-        [Authorize(Roles = "Author")]
+        [Authorize(Roles = $"{WebConstants.Role.AuthorRoleName},{WebConstants.Role.AdminRoleName}")]
         public IActionResult Add()
         {
             var articlesModel = new ArticlesInputModel()
@@ -37,8 +38,8 @@ namespace NewsApp.Controllers
             return View(articlesModel);
         }
         [HttpPost]
-        [Authorize(Roles = "Author")]
-        public async Task<IActionResult> Add(ArticlesInputModel article)
+        [Authorize(Roles = $"{WebConstants.Role.AuthorRoleName},{WebConstants.Role.AdminRoleName}")]
+        public async Task<IActionResult> Add(AddArticlesInputModel article)
         {
 
             article.Categories = categoriesService.GetAll<CategoriesViewModel>();
@@ -62,11 +63,10 @@ namespace NewsApp.Controllers
             return RedirectToAction(nameof(All), new {page = 1});
 
         }
-        [Authorize(Roles = "Author")]
         public async Task<IActionResult> Delete(string id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            bool? deleteResult = await articlesService.DeleteArticleByIdAsync(id, false, userId);
+            bool? deleteResult = await articlesService.DeleteArticleByIdAsync(id, userId);
             if (!deleteResult.HasValue)
             {
                 return NotFound();
@@ -111,7 +111,7 @@ namespace NewsApp.Controllers
         public async Task<IActionResult> Update(string id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var article =  await articlesService.GetYoursByIdAsync<ArticlesInputModel>(id, userId);  
+            var article =  await articlesService.GetArticleIfYours<UpdateArticleInputModel>(id, userId);  
             if (article == null)
             {
                 return NotFound();
@@ -122,15 +122,16 @@ namespace NewsApp.Controllers
 
         }
         [HttpPost]
-        public async Task<IActionResult> Update(ArticlesInputModel article, string id)
+        public async Task<IActionResult> Update(UpdateArticleInputModel article, string id)
         {
             article.Categories = categoriesService.GetAll<CategoriesViewModel>();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!ModelState.IsValid)
             {
                 return View(article);
             }
-            var doesArticleExists = await articlesService.ExistsById(id);
+            var doesArticleExists = await articlesService.ExistsAndIfYoursById(id, userId);
 
             if (!doesArticleExists)
             {

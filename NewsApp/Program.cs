@@ -63,7 +63,8 @@ var mapperConfiguration = new MapperConfiguration(cfg =>
                     .ForMember(c => c.OuterCommentId, opt =>
                     {
                         opt.MapFrom(vm => vm.OuterCommentId == null ? null : vm.OuterCommentId);
-                    }); 
+                    });
+    cfg.CreateMap<Article, UpdateArticleInputModel>();
 });
 IMapper mapper = mapperConfiguration.CreateMapper();
 builder.Services.AddSingleton(mapper);

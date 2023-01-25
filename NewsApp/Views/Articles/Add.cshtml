@@ -1,4 +1,4 @@
-﻿@model ArticlesInputModel
+﻿@model AddArticlesInputModel
 
 @{
     ViewData["Title"] = "Add an article";
@@ -35,14 +35,14 @@
 
     <div class="row">
         <div class="col-md-6">
-            <label asp-for="Category"></label>
-            <select asp-for="Category" class="form-select">
+            <label asp-for="CategoryId"></label>
+            <select asp-for="CategoryId" class="form-select">
                 @foreach (var cat in Model.Categories)
                 {
                     <option value="@cat.Id">@cat.Name</option>
                 }
             </select>
-            <span asp-validation-for="Category" class="text-danger"></span>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
         </div>
     </div>
 

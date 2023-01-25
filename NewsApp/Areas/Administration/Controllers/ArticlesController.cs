@@ -24,7 +24,7 @@ namespace NewsApp.Areas.Administration.Controllers
         public async Task<IActionResult> Delete(string articleId)
         {
             var adminId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            var success = await articlesService.DeleteArticleByIdAsync(articleId, true, adminId);
+            var success = await articlesService.DeleteArticleByIdAsync(articleId, adminId);
             return RedirectToAction(nameof(All), new {page = 1});
 
         }
