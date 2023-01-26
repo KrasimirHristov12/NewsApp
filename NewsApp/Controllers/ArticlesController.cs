@@ -7,6 +7,7 @@ using NewsApp.Data.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using NewsApp.Common;
+using NewsApp.Filters;
 
 namespace NewsApp.Controllers
 {
@@ -31,7 +32,7 @@ namespace NewsApp.Controllers
         [Authorize(Roles = $"{WebConstants.Role.AuthorRoleName},{WebConstants.Role.AdminRoleName}")]
         public IActionResult Add()
         {
-            var articlesModel = new ArticlesInputModel()
+            var articlesModel = new AddArticlesInputModel()
             {
                 Categories = categoriesService.GetAll<CategoriesViewModel>()
             };
@@ -44,11 +45,11 @@ namespace NewsApp.Controllers
 
             article.Categories = categoriesService.GetAll<CategoriesViewModel>();
 
-            
+
 
             if (!ModelState.IsValid)
             {
-                
+
                 return View(article);
             }
 
@@ -56,24 +57,20 @@ namespace NewsApp.Controllers
             bool addResult = await articlesService.AddAsync(article, ModelState, userId);
             if (!addResult)
             {
-                
+
                 return View(article);
             }
             TempData["AddedSuccessfully"] = "This article was created successfully!";
-            return RedirectToAction(nameof(All), new {page = 1});
+            return RedirectToAction(nameof(All), new { page = 1 });
 
         }
         public async Task<IActionResult> Delete(string id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            bool? deleteResult = await articlesService.DeleteArticleByIdAsync(id, userId);
-            if (!deleteResult.HasValue)
+            bool deleteResult = await articlesService.DeleteArticleByIdAsync(id, userId);
+            if (!deleteResult)
             {
-                return NotFound();
-            }
-            if (deleteResult.Value == false)
-            {
-                return Redirect($"/Identity/Account/AccessDenied?ReturnUrl=%2FArticles%2F{nameof(Delete)}");
+                return BadRequest();
             }
             TempData["DeletedSuccessfully"] = "This article was deleted successfully!";
             return RedirectToAction(nameof(All), new { page = 1 });
@@ -91,7 +88,7 @@ namespace NewsApp.Controllers
         }
         public IActionResult Yours()
         {
-                
+
             return View();
         }
         [AllowAnonymous]
@@ -111,10 +108,10 @@ namespace NewsApp.Controllers
         public async Task<IActionResult> Update(string id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var article =  await articlesService.GetArticleIfYours<UpdateArticleInputModel>(id, userId);  
+            var article = await articlesService.GetArticleIfYours<UpdateArticleInputModel>(id, userId);
             if (article == null)
             {
-                return NotFound();
+                return BadRequest();
             }
             article.Categories = categoriesService.GetAll<CategoriesViewModel>();
             return View(article);
@@ -135,16 +132,17 @@ namespace NewsApp.Controllers
 
             if (!doesArticleExists)
             {
-                return NotFound();
+                return BadRequest();
             }
             await articlesService.UpdateAsync(article, id);
             TempData["UpdatedSuccessfully"] = "This article was updated successfully!";
-            return RedirectToAction(nameof(Details),new { id = id});
+            return RedirectToAction(nameof(Details), new { id = id });
 
+        }
 
-          
-
-
+        public IActionResult Error()
+        {
+            return View();
         }
     }
 }

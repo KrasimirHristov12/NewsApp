@@ -15,7 +15,7 @@ namespace NewsApp.Services.Articles
         Task<bool> ExistsAndIfYoursById(string id, string userId);
 
         Task<T?> GetArticleIfYours<T>(string id, string userId);
-        Task<bool?> DeleteArticleByIdAsync(string id, string userId);
+        Task<bool> DeleteArticleByIdAsync(string id, string userId);
         Task UpdateAsync(UpdateArticleInputModel articleInputModel, string articleId);
 
         IEnumerable<T> GetPerPage<T>(int numberPerPage, int currentPage);

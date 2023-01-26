@@ -18,7 +18,7 @@ namespace NewsApp.Controllers
 
         public IActionResult Index()
         {
-            var result = footballService.GetStandingObjectAsync(2022, 39);
+            //var result = footballService.GetStandingObjectAsync(2022, 39);
             return View();
         }
 

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using NewsApp.Data;
 using NewsApp.Data.Models;
 using NewsApp.Data.Seeders;
+using NewsApp.Filters;
 using NewsApp.Models;
 using NewsApp.Models.Articles;
 using NewsApp.Models.Comments;
@@ -42,6 +43,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
 builder.Services.AddControllersWithViews(configure =>
 {
     configure.Filters.Add<AutoValidateAntiforgeryTokenAttribute>();
+    configure.Filters.Add<BadRequestFilterAttribute>();
 });
 
 builder.Services.AddScoped<IRepository, Repository>();
