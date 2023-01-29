@@ -51,6 +51,7 @@ namespace NewsApp.Services.Articles
 
         public async Task<bool> AddAsync(AddArticlesInputModel articleData, ModelStateDictionary modelState, string userId)
         {
+            string path = Path.Combine(webHost.WebRootPath, "images", "articles");
             if (!modelState.IsValid)
             {
                 return false;
@@ -60,23 +61,27 @@ namespace NewsApp.Services.Articles
             {
                 Title = articleData.Title,
                 Content = articleData.Content,
-                ImageName = articleData.Image != null ? articleData.Image.FileName : null,
                 CategoryId = Guid.Parse(articleData.CategoryId),
                 UserId = userId
             };
-            await repo.AddAsync(article);
-
-            if (article.ImageName != null)
+            foreach (var image in articleData.Images)
             {
-                string path = Path.Combine(webHost.WebRootPath, "images", "articles");
-                await filesService.UploadAsync(path, articleData.Image);
-
+                article.Images.Add(new Image
+                {
+                    Name = image.FileName,
+                    Extension = Path.GetExtension(image.FileName),
+            });
             }
+
+           
+            await filesService.UploadAsync(path, articleData.Images);
+
+            await repo.AddAsync(article);
             return true;
 
         }
 
-        public async Task<bool> DeleteArticleByIdAsync(string id,  string userId)
+        public async Task<bool> DeleteArticleByIdAsync(string id, string userId)
         {
             var article = await repo.GetByIdAsync<Article>(id);
             var inAdminRole = await IsCurrentUserAdmin(userId);
@@ -103,7 +108,7 @@ namespace NewsApp.Services.Articles
 
             }
             return false;
-            
+
         }
 
         public async Task<T> GetByIdAsync<T>(string id)

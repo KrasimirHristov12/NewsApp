@@ -5,6 +5,6 @@ namespace NewsApp.Models.Articles
     public class AddArticlesInputModel : ArticlesInputModel
     {
         [ValidateFileExtension]
-        public IFormFile? Image { get; set; }
+        public IEnumerable<IFormFile> Images { get; set; }
     }
 }

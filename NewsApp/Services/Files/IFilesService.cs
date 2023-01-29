@@ -2,6 +2,6 @@
 {
     public interface IFilesService
     {
-        Task UploadAsync(string path, IFormFile file);
+        Task UploadAsync(string path, IEnumerable<IFormFile> files);
     }
 }

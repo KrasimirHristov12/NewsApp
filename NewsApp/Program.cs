@@ -10,6 +10,7 @@ using NewsApp.Filters;
 using NewsApp.Models;
 using NewsApp.Models.Articles;
 using NewsApp.Models.Comments;
+using NewsApp.Models.Images;
 using NewsApp.Services.Articles;
 using NewsApp.Services.Categories;
 using NewsApp.Services.Comments;
@@ -61,6 +62,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 var mapperConfiguration = new MapperConfiguration(cfg =>
 {
     cfg.CreateMap<Article, DisplayArticleViewModel>();
+    cfg.CreateMap<Image, ImagesViewModel>();
     cfg.CreateMap<CommentsInputModel, Comment>()
                     .ForMember(c => c.OuterCommentId, opt =>
                     {

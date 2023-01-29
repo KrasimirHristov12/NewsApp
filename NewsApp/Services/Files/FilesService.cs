@@ -2,14 +2,19 @@
 {
     public class FilesService : IFilesService
     {
-        public async Task UploadAsync(string path,IFormFile file)
+        public async Task UploadAsync(string path,IEnumerable<IFormFile> files)
         {
-            path = Path.Combine(path, file.FileName);
-            if (file.Length > 0)
+            string initialPath = path;
+            foreach (var file in files)
             {
-                using (Stream stream = new FileStream(path,FileMode.Create))
+
+                path = Path.Combine(initialPath, file.FileName);
+                if (file.Length > 0)
                 {
-                    await file.CopyToAsync(stream);
+                    using (Stream stream = new FileStream(path, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
                 }
             }
         }
