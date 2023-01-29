@@ -1,22 +1,18 @@
 ﻿@model LikesViewModel
 
-<button class="like-btn"><i class="fa-sharp fa-solid fa-thumbs-up">@Model.LikesCount</i></button>
-<button class="dislike-btn"><i class="fa-sharp fa-solid fa-thumbs-down">@Model.DislikeCount</i></button>
+<button class="like-btn">
+    <i class="fa-sharp fa-solid fa-thumbs-up @(Model.IsLiked != null ? (Model.IsLiked.Value ? "text-success" : "") : "")">@Model.LikesCount</i></button>
+<button class="dislike-btn"><i class="fa-sharp fa-solid fa-thumbs-down @(Model.IsLiked != null ? (!Model.IsLiked.Value ? "text-danger" : "") : "")">@Model.DislikeCount</i></button>
 
 
 <script type="text/javascript" on-content-loaded="true">
-
-
     $articleId = "@Model.ArticleId";
-
-
     function vote(isLiked, articleId) {
-
         $requestVerificationToken = $("#request-verification-token-form input[name=__RequestVerificationToken]").val();
         $.ajax({
             type: "POST",
             url: "/api/likes",
-            data: JSON.stringify({articleId: articleId, isLiked: isLiked}),
+            data: JSON.stringify({ articleId: articleId, isLiked: isLiked }),
             headers: { "RequestVerificationToken": $requestVerificationToken },
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -24,33 +20,31 @@
                 console.log(data);
                 oldLikeCount = parseInt($(".like-btn").text());
                 oldDislikeCount = parseInt($(".dislike-btn").text());
-
                 newLikeCount = data.likesCount;
                 newDislikeCount = data.dislikeCount;
-                if (newLikeCount > oldLikeCount) {
+                if (data.isLiked) {
                     $(".like-btn i").addClass("text-success");
                     $(".dislike-btn i").removeClass("text-danger");
                 }
-                if (newDislikeCount > oldDislikeCount) {
+                else if (data.isLiked == null) {
+
+                    $(".like-btn i").removeClass("text-success");
+                    $(".dislike-btn i").removeClass("text-danger");
+                }
+                else {
                     $(".dislike-btn i").addClass("text-danger");
                     $(".like-btn i").removeClass("text-success");
-
+                    
                 }
-
+                
                 $(".like-btn i").text(data.likesCount);
                 $(".dislike-btn i").text(data.dislikeCount);
-                console.log(data);
             },
             error: function (errMsg) {
                 alert(errMsg);
             }
-
-
         });
     }
-
-
-
     $(".like-btn").click(function () {
         vote(true, $articleId);
     })

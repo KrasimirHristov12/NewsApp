@@ -16,8 +16,8 @@ namespace NewsApp.Components
         }
         public  IViewComponentResult Invoke(string articleId)
         {
-
-            var likesModel = likesService.GetAllLikesForArticle(articleId);
+            var userId = User.Identity.IsAuthenticated ? (User as ClaimsPrincipal).FindFirstValue(ClaimTypes.NameIdentifier) : null;
+            var likesModel = likesService.GetAllLikesForArticle(articleId, userId);
             return View(likesModel);
         }
     }

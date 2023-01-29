@@ -56,7 +56,12 @@
 
     }
 
-    <vc:likes article-id="@Model.Id"></vc:likes>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <vc:likes article-id="@Model.Id"></vc:likes>
+    }
+
+   
     <div>Views: @ViewData["Views"]</div>
     <div class="article-title"><h2>@Model.Title</h2></div>
     <div id="carouselExample" class="carousel carousel-dark slide images">

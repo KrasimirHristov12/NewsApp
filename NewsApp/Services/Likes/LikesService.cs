@@ -5,6 +5,9 @@ using System.Security.Claims;
 
 namespace NewsApp.Services.Likes
 {
+
+
+
     public class LikesService : ILikesService
     {
         private readonly IRepository repo;
@@ -13,7 +16,7 @@ namespace NewsApp.Services.Likes
         {
             this.repo = repo;
         }
-        public LikesViewModel GetAllLikesForArticle(string articleId)
+        public LikesViewModel GetAllLikesForArticle(string articleId, string userId)
         {
             var likes = repo.GetAll<UserArticleLikes>().Where(x => x.ArticleId.ToString() == articleId);
             var likesModel = new LikesViewModel()
@@ -21,6 +24,8 @@ namespace NewsApp.Services.Likes
                 DislikeCount = likes.Where(x => x.IsLiked == null ? false : !x.IsLiked.Value).Count(),
                 LikesCount = likes.Where(x => x.IsLiked == null ? false : x.IsLiked.Value).Count(),
                 ArticleId = articleId,
+                UserId = userId,
+                IsLiked = likes.Where(x => x.UserId == userId).Count() == 0 ? null : likes.Where(x => x.UserId == userId).First().IsLiked,
 
             };
 
@@ -29,7 +34,7 @@ namespace NewsApp.Services.Likes
 
         public async Task<LikesViewModel> CreateLikeAsync(LikesInputModel model, string userId)
         {
-            if (DidUserVoteForArticle(model.ArticleId, userId))
+            if (DidUserVoteForArticle(model.ArticleId, userId) != null)
             {
                 return await UpdateLikeAsync(model, userId);
             }
@@ -42,13 +47,13 @@ namespace NewsApp.Services.Likes
             };
 
             await repo.AddAsync(likeModel);
-            return GetAllLikesForArticle(model.ArticleId);
+            return GetAllLikesForArticle(model.ArticleId, userId);
 
         }
 
         public async Task<LikesViewModel> UpdateLikeAsync(LikesInputModel model, string userId)
         {
-            if (!DidUserVoteForArticle(model.ArticleId, userId))
+            if (DidUserVoteForArticle(model.ArticleId, userId) == null)
             {
                 return null;
             }
@@ -56,17 +61,26 @@ namespace NewsApp.Services.Likes
 
             if (likeModel.IsLiked == model.IsLiked)
             {
-                return null;
+                likeModel.IsLiked = null;
             }
-            likeModel.IsLiked = model.IsLiked;
+            else
+            {
+                likeModel.IsLiked = model.IsLiked;
+            }
+            
             await repo.UpdateAsync(likeModel);
-            return GetAllLikesForArticle(model.ArticleId);
+            return GetAllLikesForArticle(model.ArticleId, userId);
 
         }
 
-        public bool DidUserVoteForArticle(string articleId, string userId)
+        public bool? DidUserVoteForArticle(string articleId, string userId)
         {
-            return repo.GetAll<UserArticleLikes>().Any(x => x.ArticleId.ToString() == articleId && x.UserId == userId);
+            var userLike =  repo.GetAll<UserArticleLikes>().FirstOrDefault(x => x.ArticleId.ToString() == articleId && x.UserId == userId);
+            if (userLike == null)
+            {
+                return null;
+            }
+            return true;
         }
     }
 }
