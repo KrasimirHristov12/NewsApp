@@ -7,27 +7,15 @@
 }
 <h3>Comments (<span class="comments-count">@Model.Comments.Count</span>):</h3>
 
-<div class="comments">
+<div class="comments border border-2 m-2">
     @foreach (var comment in comments.Where(c => c.OuterCommentId == null))
     {
-        <div id="comment-@(comment.Id)" class="comment border border-2 mb-2">
+        <div id="comment-@(comment.Id)" class="comment">
             <span class="username fw-bold">@comment.UserUserName</span>
-            <span class="createdOn fw-bold">- @comment.CreatedOn</span>
+            <br/>
+            <span class="createdOn fw-bold">@comment.CreatedOn</span>
             <p class="content">@comment.Content</p>
-            <div class="inner-comments">
-                @foreach (var innerComment in comment.InnerComments)
-                {
-                    <div id="inner-comment-@(innerComment.Id)" class="inner-comment border border-2 mb-2 ms-2">
-                        <span class="username fw-bold">@innerComment.UserUserName</span>
-                        <span class="createdOn fw-bold">- @innerComment.CreatedOn</span>
-                        <p class="content">@innerComment.Content</p>
-                    </div>
-                }
-            </div>
-
-
-            <button class="btn btn-primary reply-btn">Reply</button>
-
+            <button class="btn btn-primary reply-btn btn-sm">Reply</button>
             <div class="comment-reply-form border border-2 p-3 d-none">
                 <h5>Reply to a comment:</h5>
                 <textarea class="comment-content" placeholder="Please be as detailed as possible" rows="4" cols="50"></textarea>
@@ -36,6 +24,13 @@
                 </div>
 
             </div>
+            <div class="inner-comments" style="margin-left: 10px;">
+                <vc:inner-comments outer-comment-id="@comment.Id" margin="20"></vc:inner-comments>
+            </div>
+
+            
+
+
 
         </div>
     }
@@ -125,68 +120,51 @@
 
     }
 
-    $initialComments = getData($articleId);
 
 
 
     function visualizeComments(comments, articleId) 
     {
-        for (let i = $initialComments.length; i < comments.length; i++) {
-            if (comments[i].outerCommentId != null) {
-                $innerCommentHtml =
-                    `<div id="inner-comment-${comments[i].id}" class="inner-comment border border-2 mb-2 ms-2">
-                            <span class="username fw-bold">${comments[i].userUserName}</span>
-                         <span class="createdOn fw-bold">- ${comments[i].createdOn}</span>
-                          <p class="content">${comments[i].content}</p>
-                    </div>`;
+        console.log(comments);
+        $(".comments").empty();
 
-                $(`#comment-${comments[i].outerCommentId}`).find(".inner-comments").append($innerCommentHtml);
+
+        for (let i = 0; i < comments.length; i++) {
+
+                let commentHtml = `
+                             <div id="comment-${comments[i].id}" class="comment ${comments[i].outerCommentId != null ? 'inner-comment' : ''}">
+                                    <span class="username fw-bold">${comments[i].userUserName}</span>
+                                    <br />
+                                    <span class="createdOn fw-bold">${comments[i].createdOn}</span>
+                                    <p class="content">${comments[i].content}</p>
+                                <button class="btn btn-primary reply-btn btn-sm">Reply</button>
+                                <div class="comment-reply-form border border-2 p-3 d-none">
+                                    <h5>Reply to a comment:</h5>
+                                    <textarea class="comment-content" placeholder="Please be as detailed as possible" rows="4" cols="50"></textarea>
+                                    <div class="submit-btn-container">
+                                        <button class="reply-submit-btn btn btn-primary">Submit</button>
+                                    </div>
+
+                                </div>
+                                <div class="inner-comments"></div>
+                            </div>`
+            if (comments[i].outerCommentId != null) {
+                $(`#comment-${comments[i].outerCommentId} .inner-comments`).eq(0).append(commentHtml);
+                pixels = parseInt($(`#comment-${comments[i].outerCommentId} .inner-comments`).eq(0).css('margin-left').replace('px', ''));
+                $(`#comment-${comments[i].id} .inner-comments`).eq(0).css('margin-left', (pixels * 2).toString() + 'px')
             }
             else {
-                $outerCommentHtml = 
-                `<div id="comment-${comments[i].id}" class="comment border border-2 mb-2">
-                    <span class="username fw-bold">${comments[i].userUserName}</span>
-                    <span class="createdOn fw-bold">- ${comments[i].createdOn}</span>
-                    <p class="content">${comments[i].content}</p>
-                    <div class="inner-comments"></div>
-                    <button class="btn btn-primary reply-btn">Reply</button>
-                    <div class="comment-reply-form border border-2 p-3 d-none">
-                    <h5>Reply to a comment:</h5>
-                    <textarea class="comment-content" placeholder="Please be as detailed as possible" rows="4" cols="50"></textarea>
-                    <div class="submit-btn-container">
-                        <button class="reply-submit-btn btn btn-primary">Submit</button>
-                    </div>
-                </div>`;
+                $(".comments").append(commentHtml);
+                $(`.comments #comment-${comments[i].id}`).find(".inner-comments").eq(0).css('margin-left', '10px');
 
-                $(".comments").append($outerCommentHtml);
-
-            }
-            $(".comments-count").text(comments.length.toString());
+            }        
+          
+            
         }
-
-        $initialComments = comments;
+        $(".comments-count").text(comments.length.toString());
 
     }
 
-    function getData(articleId) {
-        comments = [];
-
-        $.ajax({
-            type: "GET",
-            url: `/api/comments?articleId=${articleId}`,
-            dataType: "json",
-            async: false,
-            success: function (data) {
-                comments = data;
-            },
-            error: function (errMsg) {
-                alert(errMsg);
-            }
-
-
-        });
-        return comments;
-    }
         
 
 

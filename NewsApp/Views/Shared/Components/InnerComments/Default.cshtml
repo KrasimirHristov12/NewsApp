@@ -1,0 +1,28 @@
+﻿@model ICollection<DisplayCommentsViewModel>
+
+@foreach (var comment in Model)
+{
+    <div id="comment-@(comment.Id)" class="comment inner-comment">
+        <span class="username fw-bold">@comment.UserUserName</span>
+        <br />
+        <span class="createdOn fw-bold">@comment.CreatedOn</span>
+        <p class="content">@comment.Content</p>
+        <button class="btn btn-primary reply-btn btn-sm">Reply</button>
+        <div class="comment-reply-form border border-2 p-3 d-none">
+            <h5>Reply to a comment:</h5>
+            <textarea class="comment-content" placeholder="Please be as detailed as possible" rows="4" cols="50"></textarea>
+            <div class="submit-btn-container">
+                <button class="reply-submit-btn btn btn-primary">Submit</button>
+            </div>
+
+        </div>
+        <div class="inner-comments" style="margin-left: @(ViewData["margin"])px">
+            <vc:inner-comments outer-comment-id="@comment.Id" margin="@(int.Parse(ViewData["margin"].ToString()) * 2)"></vc:inner-comments>
+        </div>
+
+
+
+
+
+    </div>
+}

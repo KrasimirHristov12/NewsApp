@@ -39,8 +39,15 @@
 </div>
 
 <div>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            
     @for (int i = 1; i <= Math.Ceiling(int.Parse(ViewData["ArticlesCount"].ToString()) / 6.0); i++)
     {
-        <a asp-route-page="@i">@i</a>
+                <li class="page-item"><a class="page-link" asp-route-page="@i">@i</a></li>
+                
+
     }
+        </ul>
+    </nav>
 </div>

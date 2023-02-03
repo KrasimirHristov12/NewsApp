@@ -23,7 +23,7 @@ namespace NewsApp.Models.Comments
             configuration.CreateMap<Comment, DisplayCommentsViewModel>()
                 .ForMember(vm => vm.CreatedOn, opt =>
                 {
-                    opt.MapFrom(c => c.CreatedOn.ToString("G"));
+                    opt.MapFrom(c => c.CreatedOn.ToString("g"));
                 });
             configuration.CreateMap<Comment, DisplayCommentsViewModel>()
                 .ForMember(vm => vm.OuterCommentId, opt =>

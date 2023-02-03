@@ -37,5 +37,13 @@ namespace NewsApp.Services.Comments
                 .ToList();
 
         }
+
+        public ICollection<T> GetInnerComments<T>(Guid outerCommentId)
+        {
+            return repo.GetAll<Comment>()
+                .Where(c => c.OuterCommentId == outerCommentId)
+                .To<T>()
+                .ToList();
+        }
     }
 }
