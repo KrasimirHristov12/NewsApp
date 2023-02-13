@@ -20,17 +20,7 @@ namespace NewsApp.Controllers
             this.commentsService = commentsService;
             this.articlesService = articlesService;
         }
-        [HttpGet]
-        public async Task<IActionResult> Get([FromQuery]string articleId)
-        {
-            var article = await articlesService.GetByIdAsync<DisplayArticleViewModel>(articleId);
-            if (article != null)
-            {
-                return Ok(commentsService.GetAllForArticle<DisplayCommentsViewModel>(Guid.Parse(articleId)));
-            }
-            return NotFound();
-            
-        }
+
 
         [HttpPost]
         [Authorize]
@@ -39,6 +29,11 @@ namespace NewsApp.Controllers
             var userId = this.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
             var comment = await commentsService.AddAsync<DisplayCommentsViewModel>(commentModel, userId);
             return Ok(comment);
+        }
+
+        public IActionResult Get([FromQuery]string articleId)
+        {
+            return Ok(commentsService.GetAllForArticle<DisplayCommentsViewModel>(Guid.Parse(articleId)));
         }
     }
 }

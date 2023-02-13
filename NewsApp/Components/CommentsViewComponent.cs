@@ -21,8 +21,9 @@ namespace NewsApp.Components
             {
                 ArticleId = articleId,
                 UserId = UserClaimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier),
-                Comments = commentsService.GetAllForArticle<DisplayCommentsViewModel>(Guid.Parse(articleId))
+                Comments = commentsService.GetForArticlePerPage<DisplayCommentsViewModel>(Guid.Parse(articleId), 1)
             };
+            ViewData["PagesCount"] = commentsService.PagesCountForArticle(Guid.Parse(articleId));
             return View(comments);
 
         }

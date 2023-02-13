@@ -5,7 +5,7 @@
 @{
     var comments = Model.Comments.ToList();
 }
-<h3>Comments (<span class="comments-count">@Model.Comments.Count</span>):</h3>
+<h3 id="commentsSection">Comments (<span class="comments-count">@Model.Comments.Count</span>):</h3>
 
 <div class="comments border border-2 m-2">
     @foreach (var comment in comments.Where(c => c.OuterCommentId == null))
@@ -28,14 +28,17 @@
                 <vc:inner-comments outer-comment-id="@comment.Id" margin="20"></vc:inner-comments>
             </div>
 
-            
 
 
 
         </div>
     }
 
+
+
+
 </div>
+
 
 <button class="add-comment btn btn-primary mb-2">Add a new comment</button>
 
@@ -46,6 +49,10 @@
         <button class="submit-btn btn btn-primary">Submit</button>
     </div>
 
+</div>
+
+<div class="more-comments">
+    <button type="button" class="btn btn-link">Show more...</button>
 </div>
 
 <form method="post" id="request-verification-token-form"></form>
@@ -81,6 +88,13 @@
         toggleCommentBox($(this));
     });
 
+ 
+
+    $(".more-comments button").click(function () {
+       
+        getComments();
+    })
+
     function toggleCommentBox(btnElement) {
         $addCommentBox = btnElement.next();
 
@@ -108,7 +122,13 @@
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (data) {
-                visualizeComments(data, articleId);
+                tobeAddedArr = [];
+                commentsInHtmlCount = $(".comment").length;
+                allCount  = data.length;
+                for (let i = commentsInHtmlCount; i < allCount; i++) {
+                    tobeAddedArr.push(data[i]);
+                }
+                visualizeComments(tobeAddedArr);
                 $textAreaCommentContent.val('');
             },
             error: function (errMsg) {
@@ -121,12 +141,27 @@
     }
 
 
+    function getComments() {
+
+        $.get(`/api/comments?articleId=${$articleId}`, function (comments) {
+            tobeAddedArr = [];
+            commentsInHtmlCount = $(".comment").length;
+            allCount = comments.length;
+            for (let i = commentsInHtmlCount ; i < commentsInHtmlCount + 10; i++) {
+                if (i == allCount) {
+                    break;
+                }
+                tobeAddedArr.push(comments[i]);
+            }
+            visualizeComments(tobeAddedArr);
+        });
+
+    }
 
 
-    function visualizeComments(comments, articleId) 
+
+    function visualizeComments(comments) 
     {
-        console.log(comments);
-        $(".comments").empty();
 
 
         for (let i = 0; i < comments.length; i++) {
@@ -150,6 +185,7 @@
                             </div>`
             if (comments[i].outerCommentId != null) {
                 $(`#comment-${comments[i].outerCommentId} .inner-comments`).eq(0).append(commentHtml);
+                console.log(parseInt($(`#comment-${comments[i].outerCommentId} .inner-comments`).eq(0).css('margin-left')));
                 pixels = parseInt($(`#comment-${comments[i].outerCommentId} .inner-comments`).eq(0).css('margin-left').replace('px', ''));
                 $(`#comment-${comments[i].id} .inner-comments`).eq(0).css('margin-left', (pixels * 2).toString() + 'px')
             }

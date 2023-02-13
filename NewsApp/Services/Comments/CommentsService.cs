@@ -26,7 +26,20 @@ namespace NewsApp.Services.Comments
             var comment = mapper.Map<Comment>(commentModel);
             comment.UserId = userId;
             await repo.AddAsync(comment);
+
             return GetAllForArticle<T>(Guid.Parse(commentModel.ArticleId));
+
+        }
+
+        public ICollection<T> GetForArticlePerPage<T>(Guid articleId, int currentPage)
+        {
+            return repo.GetAll<Comment>()
+                .Where(c => c.ArticleId == articleId)
+                .Skip((currentPage - 1) * 10)
+                .Take(10)
+                .To<T>()
+                .ToList();
+
         }
 
         public ICollection<T> GetAllForArticle<T>(Guid articleId)
@@ -45,5 +58,19 @@ namespace NewsApp.Services.Comments
                 .To<T>()
                 .ToList();
         }
+
+        public int CommentsCountForArticle(Guid articleId)
+        {
+            return repo.GetAll<Comment>()
+                .Where(c => c.ArticleId == articleId)
+                .Count();
+        }
+
+        public int PagesCountForArticle(Guid articleId)
+        {
+            int commentsCount = CommentsCountForArticle(articleId);
+            return (int)Math.Ceiling((decimal)commentsCount / 10);
+        }
+
     }
 }
