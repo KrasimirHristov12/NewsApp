@@ -47,53 +47,53 @@
 
     function retieveAndVisualizeStandings(leagueId, season=2022) {
 
-        $.ajax({
-            type: "GET",
-            url: `https://api-football-beta.p.rapidapi.com/standings?league=${leagueId}&season=${season}`,
-            headers: {
-                "X-RapidAPI-Key": "@config["FootballApiKey"]",
-                "X-RapidAPI-Host": "api-football-beta.p.rapidapi.com",
-            },
-            contentType: "application/json; charset=utf-8",
-            success: function (data) {
-                if ($(".standing").length == 0) {
-                    htmlToAppend = `<table class="table standing fs-6">
-                    <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Team</th>
-                                <th>Form</th>
-                                <th>M</th>
-                                <th>W</th>
-                                <th>D</th>
-                                <th>L</th>
-                                <th>+/-</th>
-                                <th>P</th>
-                            </tr>
-                    </thead>`;
-                    htmlToAppend += `<tbody id="standing-body">`;
-                    for (const teamInfo of data.response[0].league.standings[0]) {
-                        htmlToAppend += `<tr>
-                    <td>${teamInfo.rank}</td>
-                    <td><img src="${teamInfo.team.logo}" width="30px" />${teamInfo.team.name}</td>
-                <td>${teamInfo.form}</td>
-                  <td>${teamInfo.all.played}</td>
-                  <td>${teamInfo.all.win}</td>
-                  <td>${teamInfo.all.draw}</td>
-                  <td>${teamInfo.all.lose}</td>
-                  <td>${teamInfo.all.goals.for}:${teamInfo.all.goals.against} (${teamInfo.goalsDiff})</td>
-                  <td>${teamInfo.points}</td>
-            </tr>`
-                    }
-                    htmlToAppend += `</tbody>`
-                    $(".standing-container").append(htmlToAppend);
+        storeKey = leagueId.toString() + season.toString();
+        if (getWithExpiry(storeKey) != null) {
+            data = getWithExpiry(storeKey);
+            visualizeStandings(data);
+        }
+        else {
 
+            $.ajax({
+                type: "GET",
+                url: `https://api-football-beta.p.rapidapi.com/standings?league=${leagueId}&season=${season}`,
+                headers: {
+                    "X-RapidAPI-Key": "@config["FootballApiKey"]",
+                    "X-RapidAPI-Host": "api-football-beta.p.rapidapi.com",
+                },
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    visualizeStandings(data);
+                    setWithExpiry(storeKey, data, 1800000);
+                },
+                error: function (errMsg) {
+                    alert(errMsg);
                 }
-                else {
-                    $("#standing-body").empty();
-                    console.log(data);
-                    for (const teamInfo of data.response[0].league.standings[0]) {
-                        $("#standing-body").append(`<tr>
+
+
+            });
+       }
+    }
+
+    function visualizeStandings(data) {
+        if ($(".standing").length == 0) {
+            htmlToAppend = `<table class="table standing fs-6">
+                        <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Team</th>
+                                    <th>Form</th>
+                                    <th>M</th>
+                                    <th>W</th>
+                                    <th>D</th>
+                                    <th>L</th>
+                                    <th>+/-</th>
+                                    <th>P</th>
+                                </tr>
+                        </thead>`;
+            htmlToAppend += `<tbody id="standing-body">`;
+            for (const teamInfo of data.response[0].league.standings[0]) {
+                htmlToAppend += `<tr>
                         <td>${teamInfo.rank}</td>
                         <td><img src="${teamInfo.team.logo}" width="30px" />${teamInfo.team.name}</td>
                     <td>${teamInfo.form}</td>
@@ -103,15 +103,58 @@
                       <td>${teamInfo.all.lose}</td>
                       <td>${teamInfo.all.goals.for}:${teamInfo.all.goals.against} (${teamInfo.goalsDiff})</td>
                       <td>${teamInfo.points}</td>
-                </tr>`);
-                    }
-                }
-            },
-            error: function (errMsg) {
-                alert(errMsg);
+                </tr>`
             }
+            htmlToAppend += `</tbody>`
+            $(".standing-container").append(htmlToAppend);
 
+        }
+        else {
+            $("#standing-body").empty();
+            console.log(data);
+            for (const teamInfo of data.response[0].league.standings[0]) {
+                $("#standing-body").append(`<tr>
+                            <td>${teamInfo.rank}</td>
+                            <td><img src="${teamInfo.team.logo}" width="30px" />${teamInfo.team.name}</td>
+                        <td>${teamInfo.form}</td>
+                          <td>${teamInfo.all.played}</td>
+                          <td>${teamInfo.all.win}</td>
+                          <td>${teamInfo.all.draw}</td>
+                          <td>${teamInfo.all.lose}</td>
+                          <td>${teamInfo.all.goals.for}:${teamInfo.all.goals.against} (${teamInfo.goalsDiff})</td>
+                          <td>${teamInfo.points}</td>
+                    </tr>`);
+            }
+        }
+    }
 
-        });
+    function setWithExpiry(key, value, ttl) {
+        const now = new Date()
+
+        // `item` is an object which contains the original value
+        // as well as the time when it's supposed to expire
+        const item = {
+            value: value,
+            expiry: now.getTime() + ttl,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+    }
+
+    function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+        // if the item doesn't exist, return null
+        if (!itemStr) {
+            return null
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+        // compare the expiry time of the item with the current time
+        if (now.getTime() > item.expiry) {
+            // If the item is expired, delete the item from storage
+            // and return null
+            localStorage.removeItem(key)
+            return null
+        }
+        return item.value
     }
 </script>

@@ -74,52 +74,31 @@
 			}
 		};
 
+		storageKey = leagueId.toString() + season.toString() + round.split(" ")[3].toString();
+
+		if (getWithExpiry(storageKey) != null) {
+
+				fixtureInfoArr = getWithExpiry(storageKey);
+			    vizualizeFixtures(fixtureInfoArr);
+		}
+		else {
+	
+
 		$.ajax(settings).done(function (data) {
-			htmlToAppend = "";
+			
 			
 			fixtureInfoArr = data.response;
 
-			if ($("#fixtures-table").length == 0) {
+			vizualizeFixtures(fixtureInfoArr);
+			setWithExpiry(storageKey, fixtureInfoArr, 1800000);
 
-
-
-
-				htmlToAppend = `<table class="table" id="fixtures-table">
-									<thead>
-										<tr>
-											<th>Home Team</th>
-											<th>Result</th>
-											<th>Away team</th>
-										</tr>
-									</thead>
-										<tbody id="fixturesBody">
-										</tbody>`;
-				$(".fixtures-container").append(htmlToAppend);
-								 
-			}
-			$("#fixturesBody").empty();
-			for (const fixtureInfo of fixtureInfoArr) {
-				homeTeamName = fixtureInfo.teams.home.name;
-				awayTeamName = fixtureInfo.teams.away.name;
-				homeTeamLogo = fixtureInfo.teams.home.logo;
-				awayTeamLogo = fixtureInfo.teams.away.logo;
-				homeTeamScoreFullTime = fixtureInfo.score.fulltime.home;
-				awayTeamScoreFullTime = fixtureInfo.score.fulltime.away;
-				score = homeTeamScoreFullTime == null && awayTeamScoreFullTime == null ? "NSY" : `${homeTeamScoreFullTime} - ${awayTeamScoreFullTime}`;
-				
-				$("#fixturesBody").append(`<tr>
-											<td><img src="${homeTeamLogo}" width="30px"/>${homeTeamName}</td>
-											<td>${score}</td>
-											<td><img src="${awayTeamLogo}" width="30px"/>${awayTeamName}</td>
-									</tr>`);
-
-
-			}
+			
 
 			
 			
 			
 		});
+	}
 		
 	}
 	function getAllRounds(leagueId, season=2022) {
@@ -142,6 +121,74 @@
 			});
 	}
 
+	function vizualizeFixtures(fixtureInfoArr) {
+		htmlToAppend = "";
+		if ($("#fixtures-table").length == 0) {
+			
+
+
+
+			htmlToAppend = `<table class="table" id="fixtures-table">
+										<thead>
+											<tr>
+												<th>Home Team</th>
+												<th>Result</th>
+												<th>Away team</th>
+											</tr>
+										</thead>
+											<tbody id="fixturesBody">
+											</tbody>`;
+			$(".fixtures-container").append(htmlToAppend);
+
+		}
+		$("#fixturesBody").empty();
+		for (const fixtureInfo of fixtureInfoArr) {
+			homeTeamName = fixtureInfo.teams.home.name;
+			awayTeamName = fixtureInfo.teams.away.name;
+			homeTeamLogo = fixtureInfo.teams.home.logo;
+			awayTeamLogo = fixtureInfo.teams.away.logo;
+			homeTeamScoreFullTime = fixtureInfo.score.fulltime.home;
+			awayTeamScoreFullTime = fixtureInfo.score.fulltime.away;
+			score = homeTeamScoreFullTime == null && awayTeamScoreFullTime == null ? "NSY" : `${homeTeamScoreFullTime} - ${awayTeamScoreFullTime}`;
+
+			$("#fixturesBody").append(`<tr>
+												<td><img src="${homeTeamLogo}" width="30px"/>${homeTeamName}</td>
+												<td>${score}</td>
+												<td><img src="${awayTeamLogo}" width="30px"/>${awayTeamName}</td>
+										</tr>`);
+
+
+		}
+	}
+	function setWithExpiry(key, value, ttl) {
+		const now = new Date()
+
+		// `item` is an object which contains the original value
+		// as well as the time when it's supposed to expire
+		const item = {
+			value: value,
+			expiry: now.getTime() + ttl,
+		}
+		localStorage.setItem(key, JSON.stringify(item))
+	}
+
+	function getWithExpiry(key) {
+		const itemStr = localStorage.getItem(key)
+		// if the item doesn't exist, return null
+		if (!itemStr) {
+			return null
+		}
+		const item = JSON.parse(itemStr)
+		const now = new Date()
+		// compare the expiry time of the item with the current time
+		if (now.getTime() > item.expiry) {
+			// If the item is expired, delete the item from storage
+			// and return null
+			localStorage.removeItem(key)
+			return null
+		}
+		return item.value
+	}
 
         
 </script>
