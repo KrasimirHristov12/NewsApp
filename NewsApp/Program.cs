@@ -122,6 +122,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
+    name: "ArticleRoute",
+    pattern: "Article/{id:guid}",
+    defaults: new { controller = "Articles", action = "Details" }
+    );
+
+app.MapControllerRoute(
         name: "areaPath",
         pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
